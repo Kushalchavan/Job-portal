@@ -53,13 +53,5 @@ out
 # Gatsby files
 .cache/
 
-# Stores VSCode versions used for testing VSCode extensions
-.vscode-test
-
-# Vite files
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
-.vite/
-
 /src/generated/prisma
 prisma/migrations
