@@ -1,12 +1,17 @@
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { env } from "../config/env";
 
-export const signToken = (payload: object) => {
+export interface TokenPayload {
+  userId: number;
+  role: string;
+}
+
+export const signToken = (payload: TokenPayload) => {
   return jwt.sign(payload, env.jwtSecret, {
     expiresIn: "7d",
   });
 };
 
-export const verifyToken = (token: string): JwtPayload => {
-  return jwt.verify(token, env.jwtSecret) as JwtPayload;
+export const verifyToken = (token: string): TokenPayload => {
+  return jwt.verify(token, env.jwtSecret) as TokenPayload;
 };

@@ -15,7 +15,7 @@ enum Role {
 enum ApplicationStatus {
   APPLIED
   REVIEWED
-  SHORTLISTED
+  SHORTLISTED 
   REJECTED
   HIRED
 }
