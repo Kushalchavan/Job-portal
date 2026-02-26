@@ -53,5 +53,7 @@ out
 # Gatsby files
 .cache/
 
+generated
+src/generated
 /src/generated/prisma
 prisma/migrations
