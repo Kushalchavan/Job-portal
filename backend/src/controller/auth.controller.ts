@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
-import { loginUser, registerUser } from "../service/auth.service";
+import {
+  getCurrentUser,
+  loginUser,
+  registerUser,
+} from "../service/auth.service";
+import { AppError } from "../utils/AppError";
 
 export const registerController = asyncHandler(
   async (req: Request, res: Response) => {
@@ -26,3 +31,15 @@ export const loginController = asyncHandler(
     });
   },
 );
+
+export const getMe = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.user) {
+    throw new AppError("Unauthorized", 401);
+  }
+  const user = await getCurrentUser(req.user.id);
+
+  res.status(200).json({
+    success: true,
+    data: { user },
+  });
+});

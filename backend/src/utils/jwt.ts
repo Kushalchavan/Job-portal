@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { env } from "../config/env";
 
 export interface TokenPayload {
-  userId: number;
+  id: number;
   role: string;
 }
 

@@ -30,7 +30,7 @@ export const registerUser = async (
   });
 
   const token = signToken({
-    userId: user.id,
+    id: user.id,
     role: user.role,
   });
 
@@ -51,7 +51,26 @@ export const loginUser = async (email: string, password: string) => {
     throw new AppError("Invalid Credentials", 401);
   }
 
-  const token = signToken({ userId: user.id, role: user.role });
+  const token = signToken({ id: user.id, role: user.role });
 
   return token;
+};
+
+// get current user info
+export const getCurrentUser = async (userId: number) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      createdAt: true,
+    },
+  });
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+  return user;
 };

@@ -16,7 +16,15 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
 
   try {
     const decoded = verifyToken(token);
-    req.user = decoded;
+    if (!decoded.id) {
+      throw new AppError("Invalid token payload", 401);
+    }
+
+    req.user = {
+      id: decoded.id,
+      role: decoded.role,
+    };
+
     next();
   } catch (error) {
     throw new AppError("Invalid Token", 401);
