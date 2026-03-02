@@ -37,8 +37,10 @@ model User {
 
   applications Application[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  jobs      Job[]
+  companies Company[]
 }
 
 model Application {
@@ -67,19 +69,28 @@ model Job {
   minExperience  Int
   maxExperience  Int
   employmentType EmploymentType @default(FULL_TIME)
-  deletedAt      DateTime?
+
+  // Job Visiblity & lifecycle
+  isActive  Boolean   @default(true)
+  deletedAt DateTime?
 
   companyId Int
-  company   Company @relation(fields: [companyId], references: [id])
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  createdById Int
+  createdBy   User @relation(fields: [createdById], references: [id])
 
   applications Application[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([location]) // for search performance
-  @@index([minSalary, maxSalary]) // for search performance
+  // Indexes for performance
+  @@index([title])
+  @@index([location])
+  @@index([employmentType])
   @@index([companyId])
+  @@index([location, employmentType])
 }
 
 model Company {
@@ -88,6 +99,10 @@ model Company {
   description String
   website     String?
   location    String
+
+  createdById Int
+  createdBy   User @relation(fields: [createdById], references: [id])
+  
   jobs        Job[]
 
   createdAt DateTime @default(now())
