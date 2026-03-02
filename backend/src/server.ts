@@ -3,6 +3,7 @@ import { errorHandler } from "./middlewares/error.middleware";
 import morgan from "morgan";
 import { env } from "./config/env";
 import authRoutes from "./routes/auth.routes";
+import jobRoutes from "./routes/job.routes";
 
 const app = express();
 
@@ -11,6 +12,7 @@ app.use(morgan("dev"));
 
 // All routes here
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/jobs", jobRoutes);
 
 // Error handler
 app.use(errorHandler);

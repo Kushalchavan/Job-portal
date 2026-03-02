@@ -31,7 +31,7 @@ export const createJobs = async (data: CreateJobInput, userId: number) => {
   return job;
 };
 
-export const updateJobs = async (data: UpdateJobInput, userId: number) => {
+export const updateJob = async (data: UpdateJobInput, userId: number) => {
   // check if job exists or not
   const job = await prisma.job.findUnique({
     where: { id: data.id },
