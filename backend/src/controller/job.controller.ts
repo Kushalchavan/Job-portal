@@ -51,6 +51,7 @@ export const getJobsController = asyncHandler(
     });
   },
 );
+
 export const getJobByIdController = asyncHandler(
   async (req: Request, res: Response) => {
     const jobId = Number(req.params.id);
@@ -62,6 +63,7 @@ export const getJobByIdController = asyncHandler(
     });
   },
 );
+
 export const deleteJobController = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) {

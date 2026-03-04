@@ -4,6 +4,7 @@ import morgan from "morgan";
 import { env } from "./config/env";
 import authRoutes from "./routes/auth.routes";
 import jobRoutes from "./routes/job.routes";
+import companyRoutes from "./routes/company.route";
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(morgan("dev"));
 // All routes here
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/jobs", jobRoutes);
+app.use("/api/v1/companies", companyRoutes);
 
 // Error handler
 app.use(errorHandler);
