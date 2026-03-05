@@ -17,6 +17,7 @@ export const createCompanyController = asyncHandler(
 
     res.status(201).json({
       success: true,
+      message: "Company created successfully",
       data: company,
     });
   },
@@ -34,6 +35,7 @@ export const updateCompanyController = asyncHandler(
     );
     res.status(200).json({
       success: true,
+      message: "Company updated successfully",
       data: updatedCompany,
     });
   },

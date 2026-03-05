@@ -18,6 +18,7 @@ export const createJobController = asyncHandler(
 
     res.status(201).json({
       success: true,
+      message: "Job created successfully",
       data: job,
     });
   },
@@ -36,6 +37,7 @@ export const updateJobController = asyncHandler(
 
     res.status(200).json({
       success: true,
+      message: "Job updated successfully",
       data: updatedJob,
     });
   },

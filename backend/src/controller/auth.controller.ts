@@ -14,6 +14,7 @@ export const registerController = asyncHandler(
 
     res.status(201).json({
       success: true,
+      message: "User registered successfully",
       data: { user },
     });
   },
@@ -27,6 +28,7 @@ export const loginController = asyncHandler(
 
     res.status(200).json({
       success: true,
+      message: "User logged in successfully",
       data: { user },
     });
   },
