@@ -15,11 +15,11 @@ const baseJobSchema = z.object({
 // for creting job
 export const createJobSchema = baseJobSchema
   .refine((data) => data.maxSalary >= data.minSalary, {
-    message: "Max salary must be >= min salary",
+    message: "Max salary must be greater than or equal to min salary",
     path: ["maxSalary"],
   })
   .refine((data) => data.maxExperience >= data.minExperience, {
-    message: "Max experience must be >= min experience",
+    message: "Max experience must be greater than or equal to min experience",
     path: ["maxExperience"],
   });
 
