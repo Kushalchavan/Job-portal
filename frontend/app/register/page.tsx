@@ -11,9 +11,7 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [userType, setUserType] = useState<"jobseeker" | "recruiter">(
     "jobseeker",
   );
@@ -126,33 +124,6 @@ export default function RegisterPage() {
               </p>
             </div>
 
-            {/* Confirm Password Input */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">
-                Confirm Password
-              </label>
-              <div className="relative">
-                <Input
-                  type={showConfirmPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="bg-card border-border pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition"
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
-                </button>
-              </div>
-            </div>
-
             {/* Submit Button */}
             <Button
               type="submit"
@@ -167,7 +138,6 @@ export default function RegisterPage() {
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-border" />
             </div>
-            
           </div>
 
           {/* Sign In Link */}

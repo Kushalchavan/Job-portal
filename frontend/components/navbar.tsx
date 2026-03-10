@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Search, LogOut, Menu, X, Briefcase } from "lucide-react";
+import { LogOut, Menu, X, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
@@ -19,7 +19,7 @@ export default function Navbar() {
   const { setTheme } = useTheme();
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border bg-background">
+    <nav className="sticky top-0 z-50 border-b border-border bg-background/60 backdrop-blur-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
