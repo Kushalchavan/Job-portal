@@ -40,7 +40,7 @@ export default function Navbar() {
               href="/jobs"
               className="text-muted-foreground hover:text-foreground transition"
             >
-              Browse Jobs
+              Jobs
             </Link>
             <Link
               href="/about"
