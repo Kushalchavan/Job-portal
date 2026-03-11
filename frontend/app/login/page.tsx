@@ -6,11 +6,33 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Eye, EyeOff } from "lucide-react";
+import { loginUser } from "@/services/auth.service";
+import { setToken } from "@/lib/auth";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const data = await loginUser({
+        email,
+        password,
+      });
+
+      setToken(data.token);
+      router.push("/jobs");
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
@@ -21,11 +43,11 @@ export default function LoginPage() {
               Welcome Back
             </h1>
             <p className="text-muted-foreground">
-              Sign in to your SleekScope account
+              Sign in to your Hirely account
             </p>
           </div>
 
-          <form className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-4">
             {/* {error && (
               <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
                 {error}
@@ -78,9 +100,10 @@ export default function LoginPage() {
             {/* Submit Button */}
             <Button
               type="submit"
+              disabled={loading}
               className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
             >
-              Sign In
+              {loading ? "Signing In..." : "Sign In"}
             </Button>
           </form>
 
@@ -89,7 +112,6 @@ export default function LoginPage() {
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-border" />
             </div>
-        
           </div>
 
           {/* Sign Up Link */}

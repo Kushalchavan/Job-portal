@@ -9,6 +9,7 @@ const baseJobSchema = z.object({
   minExperience: z.coerce.number().int().nonnegative(),
   maxExperience: z.coerce.number().int().nonnegative(),
   employmentType: z.enum(["FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP"]),
+  level: z.enum(["JUNIOR", "MID", "SENIOR", "LEAD"]),
   companyId: z.coerce.number().int().positive(),
 });
 

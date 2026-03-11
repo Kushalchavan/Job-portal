@@ -6,15 +6,40 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Eye, EyeOff } from "lucide-react";
+import { setToken } from "@/lib/auth";
+import { registerUser } from "@/services/auth.service";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [userType, setUserType] = useState<"jobseeker" | "recruiter">(
     "jobseeker",
   );
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const data = await registerUser({
+        name,
+        email,
+        password,
+        role: userType === "recruiter" ? "RECRUITER" : "USER",
+      });
+
+      setToken(data.token);
+      router.push("/jobs");
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
@@ -29,7 +54,7 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <form className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* {error && (
               <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
                 {error}
@@ -126,10 +151,11 @@ export default function RegisterPage() {
 
             {/* Submit Button */}
             <Button
+              disabled={loading}
               type="submit"
               className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
             >
-              Create Account
+              {loading ? "Creating Account..." : "Create Account"}
             </Button>
           </form>
 

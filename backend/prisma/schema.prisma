@@ -21,6 +21,13 @@ enum ApplicationStatus {
   HIRED
 }
 
+enum Level {
+  JUNIOR
+  MID
+  SENIOR
+  LEAD
+}
+
 enum EmploymentType {
   FULL_TIME
   PART_TIME
@@ -69,6 +76,7 @@ model Job {
   location       String
   minExperience  Int
   maxExperience  Int
+  level          Level          @default(JUNIOR)
   employmentType EmploymentType @default(FULL_TIME)
 
   // Job Visiblity & lifecycle

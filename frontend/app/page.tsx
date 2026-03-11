@@ -238,7 +238,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-border pt-6 flex flex-col md:flex-row items-center justify-between text-muted-foreground text-sm">
-            <p>&copy; 2024 SleekScope. All rights reserved.</p>
+            <p>&copy; 2026 Hirely. All rights reserved.</p>
             <div className="flex gap-6 mt-4 md:mt-0">
               <a href="#" className="hover:text-accent transition">
                 Twitter

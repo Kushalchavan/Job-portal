@@ -1,6 +1,5 @@
 "use client";
 
-import { mockJobs } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -13,14 +12,46 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getJobById } from "@/services/job.service";
+import { Job } from "@/types/job.types";
+import { applyJob } from "@/services/application.service";
 
 export default function JobDetailsPage() {
-  const params = useParams();
-  const jobId = params.id as string;
-  const job = mockJobs.find((j) => j.id === jobId);
   const [isApplied, setIsApplied] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [job, setJob] = useState<Job | null>(null);
+  const [loading, setLoading] = useState(true);
+  const params = useParams();
+  const jobId = params.id as string;
+
+  useEffect(() => {
+    const fetchJob = async () => {
+      try {
+        const data = await getJobById(Number(jobId));
+        setJob(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJob();
+  }, [jobId]);
+
+  const handleApply = async () => {
+    try {
+      await applyJob(Number(jobId));
+      setIsApplied(true);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  if (loading) {
+    return <p className="text-center py-10">Loading job...</p>;
+  }
 
   if (!job) {
     return (
@@ -37,7 +68,7 @@ export default function JobDetailsPage() {
     );
   }
 
-  const formattedSalary = `$${(job.salary.min / 1000).toFixed(0)}K - $${(job.salary.max / 1000).toFixed(0)}K`;
+  const formattedSalary = `$${(job.minSalary / 1000).toFixed(0)}K - $${(job.maxSalary / 1000).toFixed(0)}K`;
 
   return (
     <div className="min-h-screen bg-background">
@@ -58,7 +89,9 @@ export default function JobDetailsPage() {
               <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
                 {job.title}
               </h1>
-              <p className="text-lg text-muted-foreground">{job.company}</p>
+              <p className="text-lg text-muted-foreground">
+                {job.company.name}
+              </p>
             </div>
             <div className="flex gap-3 sm:flex-col">
               <Button
@@ -100,7 +133,9 @@ export default function JobDetailsPage() {
                 <Briefcase className="w-4 h-4" />
                 <span className="text-sm text-muted-foreground">Type</span>
               </div>
-              <p className="font-semibold text-foreground">{job.type}</p>
+              <p className="font-semibold text-foreground">
+                {job.employmentType}
+              </p>
             </div>
             <div>
               <div className="flex items-center gap-2 text-accent mb-1">
@@ -139,7 +174,7 @@ export default function JobDetailsPage() {
             </Card>
 
             {/* Requirements */}
-            <Card className="p-6 border border-border">
+            {/* <Card className="p-6 border border-border">
               <h2 className="text-2xl font-bold text-foreground mb-4">
                 Requirements
               </h2>
@@ -151,10 +186,10 @@ export default function JobDetailsPage() {
                   </li>
                 ))}
               </ul>
-            </Card>
+            </Card> */}
 
             {/* Benefits */}
-            <Card className="p-6 border border-border">
+            {/* <Card className="p-6 border border-border">
               <h2 className="text-2xl font-bold text-foreground mb-4">
                 What We Offer
               </h2>
@@ -169,7 +204,7 @@ export default function JobDetailsPage() {
                   </div>
                 ))}
               </div>
-            </Card>
+            </Card> */}
           </div>
 
           {/* Sidebar */}
@@ -181,10 +216,14 @@ export default function JobDetailsPage() {
                   Ready to apply?
                 </h3>
                 <Button
-                  onClick={() => setIsApplied(!isApplied)}
-                  className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                  onClick={handleApply}
+                  className={
+                    isApplied
+                      ? "bg-green-600 hover:bg-green-700"
+                      : "bg-accent text-accent-foreground hover:bg-accent/90"
+                  }
                 >
-                  {isApplied ? "Application Submitted!" : "Apply Now"}
+                  {isApplied ? "✓ Applied" : "Apply Now"}
                 </Button>
                 <p className="text-xs text-muted-foreground mt-3 text-center">
                   Free to apply • Takes less than 2 minutes
@@ -194,11 +233,11 @@ export default function JobDetailsPage() {
               {/* Company Info */}
               <Card className="p-6 border border-border">
                 <h3 className="font-semibold text-foreground mb-4">
-                  About {job.company}
+                  About {job.company.name}
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  {job.company} is a leading company in the tech industry, known
-                  for innovation and excellence.
+                  {job.company.name} is a leading company in the tech industry,
+                  known for innovation and excellence.
                 </p>
                 <Link
                   href="#"
@@ -209,12 +248,12 @@ export default function JobDetailsPage() {
               </Card>
 
               {/* Similar Jobs */}
-              <Card className="p-6 border border-border">
+              {/* <Card className="p-6 border border-border">
                 <h3 className="font-semibold text-foreground mb-4">
                   Similar roles
                 </h3>
                 <div className="space-y-3 text-sm">
-                  {mockJobs
+                  {jobs
                     .filter((j) => j.id !== jobId && j.level === job.level)
                     .slice(0, 3)
                     .map((similarJob) => (
@@ -232,10 +271,10 @@ export default function JobDetailsPage() {
                       </Link>
                     ))}
                 </div>
-              </Card>
+              </Card> */}
 
               {/* Stats */}
-              <Card className="p-6 border border-border">
+              {/* <Card className="p-6 border border-border">
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Applications</span>
@@ -254,7 +293,7 @@ export default function JobDetailsPage() {
                     </span>
                   </div>
                 </div>
-              </Card>
+              </Card> */}
             </div>
           </div>
         </div>
