@@ -1,3 +1,5 @@
+import { Company } from "@/types";
+
 export interface Job {
   id: string;
   title: string;
@@ -293,4 +295,53 @@ export const recentApplicants: Applicant[] = [
     status: 'Interview',
     rating: 4
   }
+];
+
+
+export const mockCompanies: Company[] = [
+  {
+    id: 1,
+    name: 'TechCorp',
+    location: 'San Francisco, CA',
+    website: 'https://techcorp.com',
+    description: 'Building innovative solutions for the future of technology. We specialize in AI and cloud computing.',
+    logo: 'TC',
+    activeJobs: 5
+  },
+  {
+    id: 2,
+    name: 'InnovateLabs',
+    location: 'New York, NY',
+    website: 'https://innovatelabs.com',
+    description: 'Pioneering digital transformation for enterprises worldwide. Full-stack development experts.',
+    logo: 'IL',
+    activeJobs: 3
+  },
+  {
+    id: 3,
+    name: 'CloudSystems',
+    location: 'Austin, TX',
+    website: 'https://cloudsystems.io',
+    description: 'Next-generation cloud infrastructure platform. Helping companies scale globally.',
+    logo: 'CS',
+    activeJobs: 2
+  },
+  {
+    id: 4,
+    name: 'CreativeStudio',
+    location: 'Los Angeles, CA',
+    website: 'https://creativestudio.design',
+    description: 'Award-winning design and product agency. Creating beautiful digital experiences.',
+    logo: 'CR',
+    activeJobs: 4
+  },
+  {
+    id: 5,
+    name: 'DataFlow',
+    location: 'Remote',
+    website: 'https://dataflow.ai',
+    description: 'Real-time data analytics and visualization platform. Transforming how companies understand their data.',
+    logo: 'DF',
+    activeJobs: 6
+  },
 ];
