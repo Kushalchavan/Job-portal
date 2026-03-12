@@ -1,11 +1,12 @@
 import { Job } from "./job.types";
 
-export type ApplicationStatus =
-  | "APPLIED"
-  | "REVIEWED"
-  | "SHORTLISTED"
-  | "REJECTED"
-  | "HIRED";
+export enum ApplicationStatus {
+  APPLIED = "APPLIED",
+  REVIEWED = "REVIEWED",
+  SHORTLISTED = "SHORTLISTED",
+  REJECTED = "REJECTED",
+  HIRED = "HIRED",
+}
 
 export interface Application {
   id: number;

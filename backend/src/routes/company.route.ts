@@ -29,13 +29,17 @@ router.put(
   validate(updateCompanySchema),
   updateCompanyController,
 );
-router.get("/", getAllCompaniesController);
+router.get(
+  "/my",
+  verifyJWT,
+  requireRole("RECRUITER"),
+  getAllCompaniesController,
+);
 router.delete(
   "/:id",
   verifyJWT,
   requireRole("RECRUITER"),
   deleteCompanyController,
 );
-
 
 export default router;

@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProtectedRoute from "@/components/protected-route";
 import { useEffect } from "react";
 import { getMyApplications } from "@/services/application.service";
-import { Application } from "@/types/application.types";
+import { Application, ApplicationStatus } from "@/types/application.types";
 
 export default function ApplicationsPage() {
   const [applications, setApplications] = useState<Application[]>([]);
@@ -16,32 +16,26 @@ export default function ApplicationsPage() {
     return applications.filter((app) => app.status === status);
   };
 
-const statuses: Application["status"][] = [
-  "APPLIED",
-  "REVIEWED",
-  "SHORTLISTED",
-  "REJECTED",
-  "HIRED",
-];
+  const statuses = Object.values(ApplicationStatus);
 
   useEffect(() => {
-  const fetchApplications = async () => {
-    try {
-      const data = await getMyApplications();
-      setApplications(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const fetchApplications = async () => {
+      try {
+        const data = await getMyApplications();
+        setApplications(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  fetchApplications();
-}, []);
+    fetchApplications();
+  }, []);
 
-if (loading) {
-  return <p className="text-center py-10">Loading applications...</p>;
-}
+  if (loading) {
+    return <p className="text-center py-10">Loading applications...</p>;
+  }
 
   return (
     <ProtectedRoute>
@@ -62,23 +56,37 @@ if (loading) {
         <section className="px-4 py-8 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-4xl">
             {applications.length > 0 ? (
-              <Tabs defaultValue="APPLIED" className="w-full">
+              <Tabs defaultValue={ApplicationStatus.APPLIED} className="w-full">
                 <TabsList className="grid w-full grid-cols-5">
-                  <TabsTrigger value="APPLIED">
-                    Applied ({getApplicationsByStatus("APPLIED").length})
+                  <TabsTrigger value={ApplicationStatus.APPLIED}>
+                    Applied (
+                    {getApplicationsByStatus(ApplicationStatus.APPLIED).length})
                   </TabsTrigger>
-                  <TabsTrigger value="SHORTLISTED">
-                    Shortlisted ({getApplicationsByStatus("SHORTLISTED").length}
+
+                  <TabsTrigger value={ApplicationStatus.SHORTLISTED}>
+                    Shortlisted (
+                    {
+                      getApplicationsByStatus(ApplicationStatus.SHORTLISTED)
+                        .length
+                    }
                     )
                   </TabsTrigger>
-                  <TabsTrigger value="REVIEWED">
-                    Interview ({getApplicationsByStatus("REVIEWED").length})
+
+                  <TabsTrigger value={ApplicationStatus.REVIEWED}>
+                    Interview (
+                    {getApplicationsByStatus(ApplicationStatus.REVIEWED).length}
+                    )
                   </TabsTrigger>
-                  <TabsTrigger value="REJECTED">
-                    Rejected ({getApplicationsByStatus("REJECTED").length})
+
+                  <TabsTrigger value={ApplicationStatus.REJECTED}>
+                    Rejected (
+                    {getApplicationsByStatus(ApplicationStatus.REJECTED).length}
+                    )
                   </TabsTrigger>
-                  <TabsTrigger value="HIRED">
-                    Hired ({getApplicationsByStatus("HIRED").length})
+
+                  <TabsTrigger value={ApplicationStatus.HIRED}>
+                    Hired (
+                    {getApplicationsByStatus(ApplicationStatus.HIRED).length})
                   </TabsTrigger>
                 </TabsList>
 

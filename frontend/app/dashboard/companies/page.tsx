@@ -1,12 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { mockCompanies } from '@/lib/data';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-
+import { useEffect, useState } from "react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -14,9 +12,19 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Building2, MapPin, Globe, Plus, Eye, Briefcase, Upload } from 'lucide-react';
-import Link from 'next/link';
+} from "@/components/ui/dialog";
+import {
+  Building2,
+  MapPin,
+  Globe,
+  Plus,
+  Eye,
+  Briefcase,
+  Upload,
+} from "lucide-react";
+import Link from "next/link";
+import { createCompany, getMyCompanies } from "@/services/company.service";
+import { Company } from "@/types/company.types";
 
 interface CreateCompanyForm {
   name: string;
@@ -27,18 +35,34 @@ interface CreateCompanyForm {
 }
 
 export default function CompaniesPage() {
-  const [companies, setCompanies] = useState(mockCompanies);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState<CreateCompanyForm>({
-    name: '',
-    location: '',
-    website: '',
-    description: '',
+    name: "",
+    location: "",
+    website: "",
+    description: "",
     logo: null,
   });
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const data = await getMyCompanies();
+        setCompanies(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCompanies();
+  }, []);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -47,29 +71,43 @@ export default function CompaniesPage() {
     }));
   };
 
-  const handleCreateCompany = () => {
+  const handleCreateCompany = async () => {
     if (!formData.name || !formData.location) return;
 
-    const newCompany = {
-      id: String(companies.length + 1),
-      name: formData.name,
-      location: formData.location,
-      website: formData.website,
-      description: formData.description,
-      logo: formData.name.substring(0, 2).toUpperCase(),
-      activeJobs: 0,
-    };
+    try {
+      await createCompany({
+        name: formData.name,
+        location: formData.location,
+        website: formData.website,
+        description: formData.description,
+      });
 
-    setCompanies([...companies, newCompany]);
-    setFormData({
-      name: '',
-      location: '',
-      website: '',
-      description: '',
-      logo: null,
-    });
-    setIsDialogOpen(false);
+      // refresh companies list
+      const updated = await getMyCompanies();
+      setCompanies(updated);
+
+      // reset form
+      setFormData({
+        name: "",
+        location: "",
+        website: "",
+        description: "",
+        logo: null,
+      });
+
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error("Failed to create company", error);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-muted-foreground">Loading companies...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -78,7 +116,9 @@ export default function CompaniesPage() {
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold text-foreground">My Companies</h1>
-            <p className="mt-2 text-muted-foreground">Manage companies you recruit for</p>
+            <p className="mt-2 text-muted-foreground">
+              Manage companies you recruit for
+            </p>
           </div>
           <Button
             onClick={() => setIsDialogOpen(true)}
@@ -101,10 +141,12 @@ export default function CompaniesPage() {
                   {/* Logo */}
                   <div className="flex items-center gap-4">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-sm font-semibold text-accent">
-                      {company.logo}
+                      {company.name.substring(0, 2).toUpperCase()}
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-foreground">{company.name}</h3>
+                      <h3 className="font-semibold text-foreground">
+                        {company.name}
+                      </h3>
                       <p className="flex items-center gap-1 text-sm text-muted-foreground">
                         <MapPin className="h-3 w-3" />
                         {company.location}
@@ -121,7 +163,7 @@ export default function CompaniesPage() {
                   <div className="flex items-center gap-2">
                     <Briefcase className="h-4 w-4 text-accent" />
                     <span className="text-sm font-medium text-foreground">
-                      {company.activeJobs} active {company.activeJobs === 1 ? 'job' : 'jobs'}
+                      {0} active jobs
                     </span>
                   </div>
 
@@ -135,7 +177,7 @@ export default function CompaniesPage() {
                         rel="noopener noreferrer"
                         className="truncate text-sm text-accent hover:underline"
                       >
-                        {company.website.replace('https://', '')}
+                        {company.website.replace(/^https?:\/\//, "")}
                       </a>
                     </div>
                   )}
@@ -149,7 +191,10 @@ export default function CompaniesPage() {
                       View Company
                     </Button>
                   </Link>
-                  <Link href={`/dashboard/jobs?company=${company.id}`} className="flex-1">
+                  <Link
+                    href={`/dashboard/jobs?company=${company.id}`}
+                    className="flex-1"
+                  >
                     <Button variant="outline" size="sm" className="w-full">
                       <Briefcase className="mr-2 h-4 w-4" />
                       Manage Jobs
@@ -167,7 +212,9 @@ export default function CompaniesPage() {
                 <Building2 className="h-10 w-10 text-accent" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-foreground">No companies yet</h3>
+                <h3 className="text-lg font-semibold text-foreground">
+                  No companies yet
+                </h3>
                 <p className="mt-1 text-muted-foreground">
                   Create your first company to start managing job postings
                 </p>
@@ -196,7 +243,9 @@ export default function CompaniesPage() {
             <div className="flex flex-col gap-4 py-4">
               {/* Company Name */}
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-foreground">Company Name</label>
+                <label className="text-sm font-medium text-foreground">
+                  Company Name
+                </label>
                 <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2">
                   <Building2 className="h-4 w-4 text-muted-foreground" />
                   <Input
@@ -211,7 +260,9 @@ export default function CompaniesPage() {
 
               {/* Location */}
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-foreground">Location</label>
+                <label className="text-sm font-medium text-foreground">
+                  Location
+                </label>
                 <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
                   <Input
@@ -226,7 +277,9 @@ export default function CompaniesPage() {
 
               {/* Website */}
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-foreground">Website</label>
+                <label className="text-sm font-medium text-foreground">
+                  Website
+                </label>
                 <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2">
                   <Globe className="h-4 w-4 text-muted-foreground" />
                   <Input
@@ -261,7 +314,9 @@ export default function CompaniesPage() {
                 </label>
                 <label className="flex cursor-pointer items-center gap-2 rounded-lg border-2 border-dashed border-border bg-card/50 px-4 py-6 transition hover:border-accent/50 hover:bg-accent/5">
                   <Upload className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">Click to upload logo</span>
+                  <span className="text-sm text-muted-foreground">
+                    Click to upload logo
+                  </span>
                   <input
                     type="file"
                     className="hidden"
@@ -277,23 +332,21 @@ export default function CompaniesPage() {
                   />
                 </label>
                 {formData.logo && (
-                  <p className="text-xs text-accent">Logo selected: {formData.logo}</p>
+                  <p className="text-xs text-accent">
+                    Logo selected: {formData.logo}
+                  </p>
                 )}
               </div>
             </div>
 
-            <DialogFooter className="flex gap-2 sm:justify-between">
-              <Button
-                variant="outline"
-                onClick={() => setIsDialogOpen(false)}
-                className="flex-1"
-              >
+            <DialogFooter className="flex gap-2">
+              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                 Cancel
               </Button>
+
               <Button
                 onClick={handleCreateCompany}
                 disabled={!formData.name || !formData.location}
-                className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 disabled:opacity-50"
               >
                 Create Company
               </Button>

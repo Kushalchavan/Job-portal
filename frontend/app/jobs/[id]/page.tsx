@@ -23,12 +23,12 @@ export default function JobDetailsPage() {
   const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
   const params = useParams();
-  const jobId = params.id as string;
+  const jobId = Number(params.id);
 
   useEffect(() => {
     const fetchJob = async () => {
       try {
-        const data = await getJobById(Number(jobId));
+        const data = await getJobById(jobId);
         setJob(data);
       } catch (error) {
         console.error(error);

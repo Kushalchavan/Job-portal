@@ -34,8 +34,8 @@ export default function JobsPage() {
     });
   }, [jobs, searchTerm, selectedLevel, selectedType, selectedLocation]);
 
-  const levels = ["Junior", "Mid", "Senior", "Lead"];
-  const types = ["Full-time", "Part-time", "Contract", "Internship"];
+  const levels = ["JUNIOR", "MID", "SENIOR", "LEAD"];
+  const types = ["FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP"];
   const locations = ["Remote", "Work from Office", "Work from Home"];
 
   const clearFilters = () => {
@@ -64,7 +64,9 @@ export default function JobsPage() {
   }, []);
 
   if (loading) {
-    return <p className="text-center py-10">Loading jobs...</p>;
+    return <div className="flex justify-center py-20">
+  <p className="text-muted-foreground">Loading jobs...</p>
+</div>
   }
 
   return (
@@ -127,7 +129,7 @@ export default function JobsPage() {
                             : "text-muted-foreground hover:bg-card border border-transparent hover:border-border"
                         }`}
                       >
-                        {level}
+                        {level.charAt(0) + level.slice(1).toLowerCase()}
                       </button>
                     ))}
                   </div>
