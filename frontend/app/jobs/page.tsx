@@ -19,16 +19,24 @@ export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
 
   const filteredJobs = useMemo(() => {
+    if (!Array.isArray(jobs)) return [];
+
+    const search = searchTerm.toLowerCase();
+
     return jobs.filter((job) => {
+      const title = job.title?.toLowerCase() || "";
+      const company = job.company?.name?.toLowerCase() || "";
+      const description = job.description?.toLowerCase() || "";
+
       const matchesSearch =
-        job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.description.toLowerCase().includes(searchTerm.toLowerCase());
+        title.includes(search) ||
+        company.includes(search) ||
+        description.includes(search);
 
       const matchesLevel = !selectedLevel || job.level === selectedLevel;
       const matchesType = !selectedType || job.employmentType === selectedType;
       const matchesLocation =
-        !selectedLocation || job.location.includes(selectedLocation);
+        !selectedLocation || job.location?.includes(selectedLocation);
 
       return matchesSearch && matchesLevel && matchesType && matchesLocation;
     });
@@ -64,9 +72,11 @@ export default function JobsPage() {
   }, []);
 
   if (loading) {
-    return <div className="flex justify-center py-20">
-  <p className="text-muted-foreground">Loading jobs...</p>
-</div>
+    return (
+      <div className="flex justify-center py-20">
+        <p className="text-muted-foreground">Loading jobs...</p>
+      </div>
+    );
   }
 
   return (

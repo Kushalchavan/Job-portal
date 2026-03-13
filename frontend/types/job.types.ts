@@ -1,3 +1,4 @@
+import { Application } from "./application.types";
 import { Company } from "./company.types";
 
 export enum Level {
@@ -49,8 +50,11 @@ export type Job = {
 
   level: Level;
   employmentType: EmploymentType;
-  company: Company;
+
   isActive: boolean;
+  company: Company;
+
+  applications: Application[];
 
   companyId: number;
   createdById: number;

@@ -23,8 +23,14 @@ import {
   Upload,
 } from "lucide-react";
 import Link from "next/link";
-import { createCompany, getMyCompanies } from "@/services/company.service";
+import {
+  createCompany,
+  deleteCompany,
+  getMyCompanies,
+  updateCompany,
+} from "@/services/company.service";
 import { Company } from "@/types/company.types";
+import EditCompanyModal from "@/components/edit-company-modal";
 
 interface CreateCompanyForm {
   name: string;
@@ -45,20 +51,25 @@ export default function CompaniesPage() {
   });
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editOpen, setEditOpen] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+
+  const fetchCompanies = async () => {
+    try {
+      const data = await getMyCompanies();
+      setCompanies(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        const data = await getMyCompanies();
-        setCompanies(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
+    const load = async () => {
+      await fetchCompanies();
+      setLoading(false);
     };
 
-    fetchCompanies();
+    load();
   }, []);
 
   const handleInputChange = (
@@ -98,6 +109,36 @@ export default function CompaniesPage() {
       setIsDialogOpen(false);
     } catch (error) {
       console.error("Failed to create company", error);
+    }
+  };
+
+  const handleUpdateCompany = async () => {
+    if (!selectedCompany) return;
+
+    try {
+      await updateCompany(selectedCompany.id, {
+        name: formData.name,
+        location: formData.location,
+        website: formData.website,
+        description: formData.description,
+      });
+
+      const updated = await getMyCompanies();
+      setCompanies(updated);
+
+      setEditOpen(false);
+      setSelectedCompany(null);
+    } catch (error) {
+      console.error("Failed to update company", error);
+    }
+  };
+
+  const handleDeleteCompany = async (id: number) => {
+    try {
+      await deleteCompany(id);
+      setCompanies((prev) => prev.filter((c) => c.id !== id));
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -191,6 +232,7 @@ export default function CompaniesPage() {
                       View Company
                     </Button>
                   </Link>
+
                   <Link
                     href={`/dashboard/jobs?company=${company.id}`}
                     className="flex-1"
@@ -200,6 +242,34 @@ export default function CompaniesPage() {
                       Manage Jobs
                     </Button>
                   </Link>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => {
+                      setSelectedCompany(company);
+                      setFormData({
+                        name: company.name,
+                        location: company.location,
+                        website: company.website || "",
+                        description: company.description,
+                        logo: null,
+                      });
+                      setEditOpen(true);
+                    }}
+                  >
+                    Edit
+                  </Button>
+
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => handleDeleteCompany(company.id)}
+                  >
+                    Delete
+                  </Button>
                 </div>
               </Card>
             ))}
@@ -353,6 +423,60 @@ export default function CompaniesPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Edit Company Modal */}
+        {/* <Dialog open={editOpen} onOpenChange={setEditOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Company</DialogTitle>
+              <DialogDescription>Update company information</DialogDescription>
+            </DialogHeader>
+
+            <div className="flex flex-col gap-4 py-4">
+              <Input
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="Company name"
+              />
+
+              <Input
+                name="location"
+                value={formData.location}
+                onChange={handleInputChange}
+                placeholder="Location"
+              />
+
+              <Input
+                name="website"
+                value={formData.website}
+                onChange={handleInputChange}
+                placeholder="Website"
+              />
+
+              <Textarea
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                placeholder="Description"
+              />
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setEditOpen(false)}>
+                Cancel
+              </Button>
+
+              <Button onClick={handleUpdateCompany}>Update Company</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog> */}
+        <EditCompanyModal
+          open={editOpen}
+          company={selectedCompany}
+          onClose={() => setEditOpen(false)}
+          onUpdated={fetchCompanies}
+        />
       </div>
     </div>
   );

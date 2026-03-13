@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Job } from "@/lib/data";
+import { Job } from "@/types/job.types";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Briefcase, DollarSign, Users } from "lucide-react";
@@ -11,7 +11,7 @@ interface JobCardProps {
 }
 
 export default function JobCard({ job }: JobCardProps) {
-  const formattedSalary = `$${(job.salary.min / 1000).toFixed(0)}K - $${(job.salary.max / 1000).toFixed(0)}K`;
+  const formattedSalary = `$${(job.minSalary / 1000).toFixed(0)}K - $${(job.maxSalary / 1000).toFixed(0)}K`;
 
   return (
     <Card className="p-6 hover:shadow-lg hover:ring-accent/50 transition-all duration-200 cursor-pointer">
@@ -23,7 +23,9 @@ export default function JobCard({ job }: JobCardProps) {
               <h3 className="text-lg font-semibold text-foreground hover:text-accent transition">
                 {job.title}
               </h3>
-              <p className="text-muted-foreground text-sm">{job.company}</p>
+              <p className="text-muted-foreground text-sm">
+                {job.company.name}
+              </p>
             </div>
             <Badge variant="outline" className="shrink-0">
               {job.level}
@@ -38,7 +40,7 @@ export default function JobCard({ job }: JobCardProps) {
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <Briefcase className="w-4 h-4 text-accent" />
-              <span>{job.type}</span>
+              <span>{job.employmentType}</span>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <DollarSign className="w-4 h-4 text-accent" />
@@ -46,7 +48,7 @@ export default function JobCard({ job }: JobCardProps) {
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <Users className="w-4 h-4 text-accent" />
-              <span>{job.applications} applications</span>
+              <span>{job.applications.length ?? 0} applications</span>
             </div>
           </div>
 
@@ -56,7 +58,7 @@ export default function JobCard({ job }: JobCardProps) {
           </p>
 
           {/* Tags */}
-          <div className="flex flex-wrap gap-2">
+          {/* <div className="flex flex-wrap gap-2">
             {job.requirements.slice(0, 3).map((req, idx) => (
               <Badge key={idx} variant="secondary" className="text-xs">
                 {req}
@@ -67,13 +69,13 @@ export default function JobCard({ job }: JobCardProps) {
                 +{job.requirements.length - 3} more
               </Badge>
             )}
-          </div>
+          </div> */}
 
           {/* Posted Date */}
           <div className="text-xs text-muted-foreground pt-2 border-t border-border">
             Posted{" "}
             {Math.floor(
-              (new Date().getTime() - job.postedDate.getTime()) /
+              (new Date().getTime() - new Date(job.createdAt).getTime()) /
                 (1000 * 60 * 60 * 24),
             )}{" "}
             days ago
