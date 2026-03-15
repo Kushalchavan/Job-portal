@@ -23,7 +23,7 @@ export default function CompanyDetailsPage() {
 
   const company = mockCompanies.find((c) => c.id === companyId);
 
-  const companyJobs = mockJobs.filter((job) => job.company === company.name);
+  const companyJobs = mockJobs.filter((job) => job.company === company?.name);
 
   if (!company) {
     return (
@@ -52,7 +52,8 @@ export default function CompanyDetailsPage() {
             <div className="flex items-center gap-4">
 
               <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-accent/10 text-lg font-semibold text-accent">
-                {company.logo}
+                {/* {company.logo} */}
+                {company?.name.charAt(0)}
               </div>
 
               <div>

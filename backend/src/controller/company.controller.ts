@@ -2,6 +2,7 @@ import {
   createCompany,
   deleteCompany,
   getAllCompanies,
+  getCompanyById,
   updateCompany,
 } from "../service/company.service";
 import { AppError } from "../utils/AppError";
@@ -10,9 +11,9 @@ import { Request, Response } from "express";
 
 export const createCompanyController = asyncHandler(
   async (req: Request, res: Response) => {
-      if (!req.user) {
-        throw new AppError("Unauthorized", 401);
-      }
+    if (!req.user) {
+      throw new AppError("Unauthorized", 401);
+    }
     const company = await createCompany(req.body, req.user.id);
 
     res.status(201).json({
@@ -52,6 +53,21 @@ export const getAllCompaniesController = asyncHandler(
     res.status(200).json({
       success: true,
       data: companies,
+    });
+  },
+);
+
+export const getCompanyByIdController = asyncHandler(
+  async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new AppError("Unauthorized", 401);
+    }
+
+    const company = await getCompanyById(Number(req.params.id), req.user.id);
+
+    res.status(200).json({
+      success: true,
+      data: company,
     });
   },
 );

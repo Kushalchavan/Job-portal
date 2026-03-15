@@ -65,6 +65,9 @@ export const getJobs = async () => {
       isActive: true,
       deletedAt: null,
     },
+    include: {
+      company: true,
+    }
   });
 
   return jobs;

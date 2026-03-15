@@ -3,6 +3,7 @@ import {
   createCompanyController,
   deleteCompanyController,
   getAllCompaniesController,
+  getCompanyByIdController,
   updateCompanyController,
 } from "../controller/company.controller";
 import { verifyJWT } from "../middlewares/auth.middleware";
@@ -35,6 +36,7 @@ router.get(
   requireRole("RECRUITER"),
   getAllCompaniesController,
 );
+router.get("/:id", verifyJWT,getCompanyByIdController);
 router.delete(
   "/:id",
   verifyJWT,

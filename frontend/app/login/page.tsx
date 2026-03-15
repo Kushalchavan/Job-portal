@@ -25,8 +25,9 @@ export default function LoginPage() {
         email,
         password,
       });
+      console.log(data)
 
-      setToken(data.token);
+      setToken(data.data.user);
       router.push("/jobs");
     } catch (error) {
       console.error(error);

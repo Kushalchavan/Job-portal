@@ -33,7 +33,7 @@ export default function RegisterPage() {
         role: userType === "recruiter" ? "RECRUITER" : "USER",
       });
 
-      setToken(data.token);
+      setToken(data.data.user);
       router.push("/jobs");
     } catch (error) {
       console.error(error);

@@ -3,12 +3,12 @@ import { CreateJobInput, Job, UpdateJobInput } from "@/types/job.types";
 
 export const getJobs = async (): Promise<Job[]> => {
   const res = await api.get("/jobs");
-  return res.data.jobs;
+  return res.data.data;
 };
 
 export const getJobById = async (id: number): Promise<Job> => {
   const res = await api.get(`/jobs/${id}`);
-  return res.data.job;
+  return res.data.data;
 };
 
 export const createJob = async (data: CreateJobInput): Promise<Job> => {

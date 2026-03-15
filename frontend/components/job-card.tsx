@@ -48,7 +48,7 @@ export default function JobCard({ job }: JobCardProps) {
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <Users className="w-4 h-4 text-accent" />
-              <span>{job.applications.length ?? 0} applications</span>
+              <span>{job.applications?.length ?? 0} applications</span>
             </div>
           </div>
 

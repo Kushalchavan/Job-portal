@@ -7,7 +7,7 @@ import {
 
 export const getMyCompanies = async (): Promise<Company[]> => {
   const res = await api.get("/companies/my");
-  return res.data.companies;
+  return res.data.data;
 };
 
 export const createCompany = async (
@@ -24,6 +24,12 @@ export const updateCompany = async (
   const res = await api.put(`/companies/${id}`, data);
   return res.data.company;
 };
+
+export const getCompanyById = async (id: number): Promise<Company> => {
+  const res = await api.get(`/companies/${id}`);
+  console.log(res);
+  return res.data.data;
+}
 
 export const deleteCompany = async (id: number): Promise<void> => {
   await api.delete(`/companies/${id}`);

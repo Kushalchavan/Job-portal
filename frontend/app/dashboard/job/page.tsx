@@ -100,7 +100,7 @@ export default function JobsDashboardPage() {
                   </h3>
 
                   <p className="text-sm text-muted-foreground mt-1">
-                    {job.company?.name}
+                    {job.company?.name ?? "Unknown Company"}
                   </p>
 
                   <p className="text-xs text-muted-foreground mt-2">

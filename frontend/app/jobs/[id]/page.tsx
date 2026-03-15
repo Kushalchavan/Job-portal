@@ -22,10 +22,13 @@ export default function JobDetailsPage() {
   const [isSaved, setIsSaved] = useState(false);
   const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
+
   const params = useParams();
-  const jobId = Number(params.id);
+  const jobId = Number(params?.id);
 
   useEffect(() => {
+    if (!jobId) return;
+
     const fetchJob = async () => {
       try {
         const data = await getJobById(jobId);
@@ -42,7 +45,7 @@ export default function JobDetailsPage() {
 
   const handleApply = async () => {
     try {
-      await applyJob(Number(jobId));
+      await applyJob(jobId);
       setIsApplied(true);
     } catch (error) {
       console.error(error);
@@ -68,7 +71,12 @@ export default function JobDetailsPage() {
     );
   }
 
-  const formattedSalary = `$${(job.minSalary / 1000).toFixed(0)}K - $${(job.maxSalary / 1000).toFixed(0)}K`;
+  const formattedSalary =
+    job.minSalary && job.maxSalary
+      ? `$${(job.minSalary / 1000).toFixed(0)}K - $${(
+          job.maxSalary / 1000
+        ).toFixed(0)}K`
+      : "Salary not disclosed";
 
   return (
     <div className="min-h-screen bg-background">
@@ -90,24 +98,31 @@ export default function JobDetailsPage() {
                 {job.title}
               </h1>
               <p className="text-lg text-muted-foreground">
-                {job.company.name}
+                {job.company?.name ?? "Unknown Company"}
               </p>
             </div>
+
             <div className="flex gap-3 sm:flex-col">
               <Button
                 variant={isSaved ? "default" : "outline"}
                 onClick={() => setIsSaved(!isSaved)}
                 className={
-                  isSaved ? "bg-accent text-accent-foreground" : "border-border"
+                  isSaved
+                    ? "bg-accent text-accent-foreground"
+                    : "border-border"
                 }
               >
-                <Heart className={`w-4 h-4 ${isSaved ? "fill-current" : ""}`} />
+                <Heart
+                  className={`w-4 h-4 ${isSaved ? "fill-current" : ""}`}
+                />
                 <span className="hidden sm:inline ml-2">
                   {isSaved ? "Saved" : "Save"}
                 </span>
               </Button>
+
               <Button
-                onClick={() => setIsApplied(!isApplied)}
+                onClick={handleApply}
+                disabled={isApplied}
                 className={
                   isApplied
                     ? "bg-green-600 hover:bg-green-700"
@@ -128,6 +143,7 @@ export default function JobDetailsPage() {
               </div>
               <p className="font-semibold text-foreground">{formattedSalary}</p>
             </div>
+
             <div>
               <div className="flex items-center gap-2 text-accent mb-1">
                 <Briefcase className="w-4 h-4" />
@@ -137,6 +153,7 @@ export default function JobDetailsPage() {
                 {job.employmentType}
               </p>
             </div>
+
             <div>
               <div className="flex items-center gap-2 text-accent mb-1">
                 <Users className="w-4 h-4" />
@@ -144,6 +161,7 @@ export default function JobDetailsPage() {
               </div>
               <p className="font-semibold text-foreground">{job.level}</p>
             </div>
+
             <div>
               <div className="flex items-center gap-2 text-accent mb-1">
                 <MapPin className="w-4 h-4" />
@@ -157,7 +175,6 @@ export default function JobDetailsPage() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Description */}
             <Card className="p-6 border border-border">
               <h2 className="text-2xl font-bold text-foreground mb-4">
                 About the Role
@@ -172,39 +189,6 @@ export default function JobDetailsPage() {
                 make a real impact.
               </p>
             </Card>
-
-            {/* Requirements */}
-            {/* <Card className="p-6 border border-border">
-              <h2 className="text-2xl font-bold text-foreground mb-4">
-                Requirements
-              </h2>
-              <ul className="space-y-3">
-                {job.requirements.map((req, idx) => (
-                  <li key={idx} className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-accent rounded-full mt-2 shrink-0" />
-                    <span className="text-muted-foreground">{req}</span>
-                  </li>
-                ))}
-              </ul>
-            </Card> */}
-
-            {/* Benefits */}
-            {/* <Card className="p-6 border border-border">
-              <h2 className="text-2xl font-bold text-foreground mb-4">
-                What We Offer
-              </h2>
-              <div className="grid sm:grid-cols-2 gap-4">
-                {job.benefits.map((benefit, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center gap-3 p-3 bg-card rounded-lg border border-border/50"
-                  >
-                    <div className="w-2 h-2 bg-accent rounded-full" />
-                    <span className="text-muted-foreground">{benefit}</span>
-                  </div>
-                ))}
-              </div>
-            </Card> */}
           </div>
 
           {/* Sidebar */}
@@ -215,8 +199,10 @@ export default function JobDetailsPage() {
                 <h3 className="font-semibold text-foreground mb-4">
                   Ready to apply?
                 </h3>
+
                 <Button
                   onClick={handleApply}
+                  disabled={isApplied}
                   className={
                     isApplied
                       ? "bg-green-600 hover:bg-green-700"
@@ -225,6 +211,7 @@ export default function JobDetailsPage() {
                 >
                   {isApplied ? "✓ Applied" : "Apply Now"}
                 </Button>
+
                 <p className="text-xs text-muted-foreground mt-3 text-center">
                   Free to apply • Takes less than 2 minutes
                 </p>
@@ -233,67 +220,21 @@ export default function JobDetailsPage() {
               {/* Company Info */}
               <Card className="p-6 border border-border">
                 <h3 className="font-semibold text-foreground mb-4">
-                  About {job.company.name}
+                  About {job.company?.name ?? "this company"}
                 </h3>
+
                 <p className="text-sm text-muted-foreground mb-4">
-                  {job.company.name} is a leading company in the tech industry,
-                  known for innovation and excellence.
+                  {job.company?.name ?? "This company"} is a leading company in
+                  the tech industry, known for innovation and excellence.
                 </p>
+
                 <Link
-                  href="#"
+                  href={`/dashboard/companies/${job.company?.id}`}
                   className="text-accent text-sm font-medium hover:text-accent/80 transition"
                 >
                   View company profile →
                 </Link>
               </Card>
-
-              {/* Similar Jobs */}
-              {/* <Card className="p-6 border border-border">
-                <h3 className="font-semibold text-foreground mb-4">
-                  Similar roles
-                </h3>
-                <div className="space-y-3 text-sm">
-                  {jobs
-                    .filter((j) => j.id !== jobId && j.level === job.level)
-                    .slice(0, 3)
-                    .map((similarJob) => (
-                      <Link
-                        key={similarJob.id}
-                        href={`/jobs/${similarJob.id}`}
-                        className="block p-2 hover:bg-card rounded-lg transition group"
-                      >
-                        <p className="text-foreground group-hover:text-accent transition font-medium">
-                          {similarJob.title}
-                        </p>
-                        <p className="text-muted-foreground text-xs">
-                          {similarJob.company}
-                        </p>
-                      </Link>
-                    ))}
-                </div>
-              </Card> */}
-
-              {/* Stats */}
-              {/* <Card className="p-6 border border-border">
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Applications</span>
-                    <span className="font-semibold text-foreground">
-                      {job.applications}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Posted</span>
-                    <span className="font-semibold text-foreground">
-                      {Math.floor(
-                        (new Date().getTime() - job.postedDate.getTime()) /
-                          (1000 * 60 * 60 * 24),
-                      )}{" "}
-                      days ago
-                    </span>
-                  </div>
-                </div>
-              </Card> */}
             </div>
           </div>
         </div>

@@ -58,6 +58,13 @@ export const getAllCompanies = async (userId: number) => {
   });
 };
 
+export const getCompanyById = async (id: number, userId: number) => {
+  const company = await prisma.company.findUnique({
+    where: { id },
+  });
+  return company;
+};
+
 export const deleteCompany = async (id: number, userId: number) => {
   const company = await prisma.company.findUnique({
     where: { id },
@@ -72,7 +79,7 @@ export const deleteCompany = async (id: number, userId: number) => {
     throw new AppError("Not allowed", 403);
   }
 
-  // Check if there are any jobs associated with the company   
+  // Check if there are any jobs associated with the company
   const jobCount = await prisma.job.count({
     where: { companyId: id },
   });
