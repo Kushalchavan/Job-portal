@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { Users, Briefcase, CheckCircle2, Clock, TrendingUp, Plus } from 'lucide-react';
 import Link from 'next/link';
+import ProtectedRoute from '@/components/protected-route';
 
 // Mock data for charts
 const chartData = [
@@ -24,6 +25,7 @@ export default function DashboardPage() {
   const acceptedApplications = mockApplications.filter(a => a.status === 'accepted').length;
 
   return (
+    <ProtectedRoute>
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-7xl px-4 py-8">
         {/* Header */}
@@ -224,5 +226,6 @@ export default function DashboardPage() {
         </Card>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }

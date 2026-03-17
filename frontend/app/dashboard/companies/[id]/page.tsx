@@ -188,7 +188,7 @@ export default function CompanyDetailsPage() {
                       {job.applications || 0} applicants
                     </span>
 
-                    <Link href={`/dashboard/jobs/${job.id}`}>
+                    <Link href={`/dashboard/job/${job.id}`}>
                       <Button size="sm" variant="outline">
                         Manage
                       </Button>

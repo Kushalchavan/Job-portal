@@ -10,12 +10,12 @@ import { AppError } from "../utils/AppError";
 export const registerController = asyncHandler(
   async (req: Request, res: Response) => {
     const { name, email, password, role } = req.body;
-    const user = await registerUser(name, email, password, role);
+    const token = await registerUser(name, email, password, role);
 
     res.status(201).json({
       success: true,
       message: "User registered successfully",
-      data: { user },
+      data: { token },
     });
   },
 );
@@ -24,12 +24,12 @@ export const loginController = asyncHandler(
   async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
-    const user = await loginUser(email, password);
+    const token = await loginUser(email, password);
 
     res.status(200).json({
       success: true,
       message: "User logged in successfully",
-      data: { user },
+      data: { token },
     });
   },
 );

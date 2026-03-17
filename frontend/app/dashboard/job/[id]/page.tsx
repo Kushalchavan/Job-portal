@@ -9,6 +9,7 @@ import {
 } from "@/services/application.service";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import ProtectedRoute from "@/components/protected-route";
 
 export default function JobApplicantsPage() {
   const params = useParams();
@@ -59,73 +60,76 @@ export default function JobApplicantsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {" "}
-      <div className="mx-auto max-w-5xl px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Job Applicants</h1>
+    <ProtectedRoute>
+      <div className="min-h-screen bg-background">
+        {" "}
+        <div className="mx-auto max-w-5xl px-4 py-8">
+          <h1 className="text-3xl font-bold mb-6">Job Applicants</h1>
 
-        {applications.length > 0 ? (
-          <div className="space-y-4">
-            {applications.map((app) => (
-              <Card key={app.id} className="p-6 border border-border">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h3 className="font-semibold text-lg">
-                      Candidate #{app.userId}
-                    </h3>
+          {applications.length > 0 ? (
+            <div className="space-y-4">
+              {applications.map((app) => (
+                <Card key={app.id} className="p-6 border border-border">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="font-semibold text-lg">
+                        Candidate #{app.userId}
+                      </h3>
 
-                    <p className="text-sm text-muted-foreground">
-                      Applied on {new Date(app.createdAt).toLocaleDateString()}
-                    </p>
+                      <p className="text-sm text-muted-foreground">
+                        Applied on{" "}
+                        {new Date(app.createdAt).toLocaleDateString()}
+                      </p>
 
-                    <p className="text-sm mt-1">
-                      Status: <strong>{app.status}</strong>
-                    </p>
+                      <p className="text-sm mt-1">
+                        Status: <strong>{app.status}</strong>
+                      </p>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          handleStatusUpdate(
+                            app.id,
+                            ApplicationStatus.SHORTLISTED,
+                          )
+                        }
+                      >
+                        Shortlist
+                      </Button>
+
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          handleStatusUpdate(app.id, ApplicationStatus.REJECTED)
+                        }
+                      >
+                        Reject
+                      </Button>
+
+                      <Button
+                        size="sm"
+                        onClick={() =>
+                          handleStatusUpdate(app.id, ApplicationStatus.HIRED)
+                        }
+                      >
+                        Hire
+                      </Button>
+                    </div>
                   </div>
-
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() =>
-                        handleStatusUpdate(
-                          app.id,
-                          ApplicationStatus.SHORTLISTED,
-                        )
-                      }
-                    >
-                      Shortlist
-                    </Button>
-
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() =>
-                        handleStatusUpdate(app.id, ApplicationStatus.REJECTED)
-                      }
-                    >
-                      Reject
-                    </Button>
-
-                    <Button
-                      size="sm"
-                      onClick={() =>
-                        handleStatusUpdate(app.id, ApplicationStatus.HIRED)
-                      }
-                    >
-                      Hire
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <Card className="p-12 text-center border border-border">
-            <p className="text-muted-foreground">No applicants yet</p>
-          </Card>
-        )}
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card className="p-12 text-center border border-border">
+              <p className="text-muted-foreground">No applicants yet</p>
+            </Card>
+          )}
+        </div>
       </div>
-    </div>
+    </ProtectedRoute>
   );
 }

@@ -59,9 +59,17 @@ export const getAllCompanies = async (userId: number) => {
 };
 
 export const getCompanyById = async (id: number, userId: number) => {
-  const company = await prisma.company.findUnique({
-    where: { id },
+  const company = await prisma.company.findFirst({
+    where: {
+      id,
+      createdById: userId,
+    },
   });
+
+  if (!company) {
+    throw new AppError("Company not found", 404);
+  }
+
   return company;
 };
 

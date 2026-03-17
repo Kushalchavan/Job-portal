@@ -16,6 +16,7 @@ import { useState, useEffect } from "react";
 import { getJobById } from "@/services/job.service";
 import { Job } from "@/types/job.types";
 import { applyJob } from "@/services/application.service";
+import ProtectedRoute from "@/components/protected-route";
 
 export default function JobDetailsPage() {
   const [isApplied, setIsApplied] = useState(false);
@@ -79,6 +80,7 @@ export default function JobDetailsPage() {
       : "Salary not disclosed";
 
   return (
+    <ProtectedRoute>
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-4xl px-4 py-8">
         {/* Back Button */}
@@ -240,5 +242,6 @@ export default function JobDetailsPage() {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }

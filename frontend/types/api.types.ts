@@ -8,7 +8,7 @@ export interface JobsResponse {
   success: boolean;
   message: string;
   data: {
-    user: string; // JWT token
+    token: string; // JWT token
   };
 }
 
