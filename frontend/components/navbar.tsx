@@ -13,10 +13,24 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
+import { isAuthenticated } from "@/hooks/useAuth";
+import { removeToken } from "@/lib/auth";
+import { useRouter } from "next/navigation";
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { setTheme } = useTheme();
+  const router = useRouter();
+
+  // Derived state
+  const isLoggedIn = isAuthenticated();
+
+  // Logout properly
+  const handleLogout = () => {
+    removeToken(); // remove token from localStorage
+    router.push("/login"); // redirect to login page
+    router.refresh(); // re-render UI without reload
+  };
 
   return (
     <nav className="sticky top-0 z-50 border-b border-border bg-background/60 backdrop-blur-sm">
@@ -25,9 +39,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-              <span className="text-accent-foreground font-bold text-sm">
-                <Briefcase />
-              </span>
+              <Briefcase />
             </div>
             <span className="font-bold text-lg text-foreground hidden sm:inline">
               Hirely
@@ -50,14 +62,14 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Right Side Actions */}
+          {/* Right Side */}
           <div className="hidden md:flex items-center gap-4">
+            {/* Theme Toggle */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon">
-                  <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                  <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                  <span className="sr-only">Toggle theme</span>
+                  <Sun className="h-[1.2rem] w-[1.2rem] transition-all dark:scale-0 dark:-rotate-90" />
+                  <Moon className="absolute h-[1.2rem] w-[1.2rem] transition-all scale-0 rotate-90 dark:scale-100 dark:rotate-0" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -72,21 +84,47 @@ export default function Navbar() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {/* Auth Section */}
             {isLoggedIn ? (
-              <>
-                <Link href="/dashboard">
-                  <Button variant="ghost" size="sm" className="text-foreground">
-                    Dashboard
-                  </Button>
-                </Link>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsLoggedIn(false)}
-                >
-                  <LogOut className="w-4 h-4" />
-                </Button>
-              </>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <img
+                    src="https://i.pravatar.cc/40"
+                    alt="user"
+                    className="w-10 h-10 rounded-full cursor-pointer border-2 border-border"
+                  />
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="p-3 border-b border-border">
+                    <p className="text-sm font-semibold">User</p>
+                    <p className="text-xs text-muted-foreground">
+                      user@email.com
+                    </p>
+                  </div>
+
+                  <DropdownMenuItem asChild>
+                    <Link href="#">Dashboard</Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem asChild>
+                    <Link href="/#">My Account</Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem asChild>
+                    <Link href="#">Settings</Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="text-red-500"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <>
                 <Link href="/login">
@@ -111,53 +149,47 @@ export default function Navbar() {
             className="md:hidden p-2 text-foreground"
             onClick={() => setIsOpen(!isOpen)}
           >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isOpen ? <X /> : <Menu />}
           </button>
         </div>
 
         {/* Mobile Menu */}
         {isOpen && (
           <div className="md:hidden border-t border-border py-4 space-y-3">
-            <Link
-              href="/jobs"
-              className="block text-foreground hover:text-accent transition py-2"
-            >
+            <Link href="/jobs" className="block py-2">
               Browse Jobs
             </Link>
-            <Link
-              href="/about"
-              className="block text-foreground hover:text-accent transition py-2"
-            >
+            <Link href="/about" className="block py-2">
               About
             </Link>
+
             <div className="border-t border-border pt-3 space-y-2">
               {isLoggedIn ? (
                 <>
-                  <Link href="/dashboard" className="block">
+                  <Link href="/dashboard">
                     <Button variant="ghost" className="w-full justify-start">
                       Dashboard
                     </Button>
                   </Link>
+
                   <Button
                     variant="ghost"
-                    className="w-full justify-start"
-                    onClick={() => setIsLoggedIn(false)}
+                    className="w-full justify-start text-red-500"
+                    onClick={handleLogout}
                   >
                     <LogOut className="w-4 h-4 mr-2" />
-                    Sign Out
+                    Logout
                   </Button>
                 </>
               ) : (
                 <>
-                  <Link href="/login" className="block">
+                  <Link href="/login">
                     <Button variant="ghost" className="w-full justify-start">
                       Sign In
                     </Button>
                   </Link>
-                  <Link href="/register" className="block">
-                    <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-                      Sign Up
-                    </Button>
+                  <Link href="/register">
+                    <Button className="w-full">Sign Up</Button>
                   </Link>
                 </>
               )}

@@ -21,21 +21,25 @@ export default function Home() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Button
-              size="lg"
-              className="w-full sm:w-auto bg-accent text-accent-foreground hover:bg-accent/90"
-            >
-              Browse Jobs
-              <ArrowRight className="ml-2 w-4 h-4" />
-            </Button>
+            <Link href="/jobs">
+              <Button
+                size="lg"
+                className="w-full sm:w-auto bg-accent text-accent-foreground hover:bg-accent/90"
+              >
+                Browse Jobs
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </Link>
 
-            <Button
-              size="lg"
-              variant="outline"
-              className="w-full sm:w-auto border-border"
-            >
-              Get Started Free
-            </Button>
+            <Link href="/register">
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full sm:w-auto border-border"
+              >
+                Get Started Free
+              </Button>
+            </Link>
           </div>
 
           {/* Stats */}
