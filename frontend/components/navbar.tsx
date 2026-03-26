@@ -16,11 +16,13 @@ import {
 import { isAuthenticated } from "@/hooks/useAuth";
 import { removeToken } from "@/lib/auth";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { setTheme } = useTheme();
   const router = useRouter();
+  
 
   // Derived state
   const isLoggedIn = isAuthenticated();
@@ -89,10 +91,12 @@ export default function Navbar() {
             {isLoggedIn ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <img
+                  <Image
                     src="https://i.pravatar.cc/40"
                     alt="user"
                     className="w-10 h-10 rounded-full cursor-pointer border-2 border-border"
+                    width={20}
+                    height={20}
                   />
                 </DropdownMenuTrigger>
 
@@ -100,21 +104,9 @@ export default function Navbar() {
                   <div className="p-3 border-b border-border">
                     <p className="text-sm font-semibold">User</p>
                     <p className="text-xs text-muted-foreground">
-                      user@email.com
+                      user@gmail.com
                     </p>
                   </div>
-
-                  <DropdownMenuItem asChild>
-                    <Link href="#">Dashboard</Link>
-                  </DropdownMenuItem>
-
-                  <DropdownMenuItem asChild>
-                    <Link href="/#">My Account</Link>
-                  </DropdownMenuItem>
-
-                  <DropdownMenuItem asChild>
-                    <Link href="#">Settings</Link>
-                  </DropdownMenuItem>
 
                   <DropdownMenuItem
                     onClick={handleLogout}
