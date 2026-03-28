@@ -14,7 +14,7 @@ export const createCompany = async (
   data: CreateCompanyInput,
 ): Promise<Company> => {
   const res = await api.post("/companies", data);
-  return res.data.company;
+  return res.data.data;
 };
 
 export const updateCompany = async (
@@ -22,7 +22,7 @@ export const updateCompany = async (
   data: UpdateCompanyInput,
 ): Promise<Company> => {
   const res = await api.put(`/companies/${id}`, data);
-  return res.data.company;
+  return res.data.data;
 };
 
 export const getCompanyById = async (id: number): Promise<Company> => {

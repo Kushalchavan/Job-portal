@@ -28,10 +28,10 @@ export default function EditCompanyModal({
   onUpdated,
 }: Props) {
   const [form, setForm] = useState({
-    name: company?.name || "",
-    location: company?.location || "",
-    website: company?.website || "",
-    description: company?.description || "",
+    name: "",
+    location: "",
+    website: "",
+    description: "",
   });
 
   const handleChange = (
@@ -44,12 +44,16 @@ export default function EditCompanyModal({
   };
 
   const handleUpdate = async () => {
+    console.log("Update clicked", form);
     if (!company) return;
 
     try {
-      await updateCompany(company.id, form);
+      await updateCompany(company.id, {
+        ...form,
+        website: form.website.trim() === "" ? undefined : form.website,
+      });
 
-      onUpdated();
+      onUpdated(); // refresh list
       onClose();
     } catch (err) {
       console.error("Update company failed", err);
@@ -59,12 +63,30 @@ export default function EditCompanyModal({
   if (!company) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      {" "}
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        // ✅ Initialize form when modal opens
+        if (isOpen && company) {
+          setForm({
+            name: company.name,
+            location: company.location,
+            website: company.website || "",
+            description: company.description,
+          });
+        }
+
+        // ✅ Close modal
+        if (!isOpen) {
+          onClose();
+        }
+      }}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit Company</DialogTitle>
         </DialogHeader>
+
         <div className="space-y-4">
           <Input
             name="name"
@@ -82,7 +104,7 @@ export default function EditCompanyModal({
 
           <Input
             name="website"
-            value={form.website || ""}
+            value={form.website}
             onChange={handleChange}
             placeholder="Website"
           />
@@ -94,6 +116,7 @@ export default function EditCompanyModal({
             placeholder="Description"
           />
         </div>
+
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
             Cancel

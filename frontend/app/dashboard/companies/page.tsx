@@ -27,7 +27,6 @@ import {
   createCompany,
   deleteCompany,
   getMyCompanies,
-  updateCompany,
 } from "@/services/company.service";
 import { Company } from "@/types/company.types";
 import EditCompanyModal from "@/components/edit-company-modal";
@@ -110,27 +109,6 @@ export default function CompaniesPage() {
       setIsDialogOpen(false);
     } catch (error) {
       console.error("Failed to create company", error);
-    }
-  };
-
-  const handleUpdateCompany = async () => {
-    if (!selectedCompany) return;
-
-    try {
-      await updateCompany(selectedCompany.id, {
-        name: formData.name,
-        location: formData.location,
-        website: formData.website,
-        description: formData.description,
-      });
-
-      const updated = await getMyCompanies();
-      setCompanies(updated);
-
-      setEditOpen(false);
-      setSelectedCompany(null);
-    } catch (error) {
-      console.error("Failed to update company", error);
     }
   };
 
@@ -237,15 +215,15 @@ export default function CompaniesPage() {
                       </Button>
                     </Link>
 
-                    <Link
-                      href={`/dashboard/jobs?company=${company.id}`}
+                    {/* <Link
+                      href={`/dashboard/company/${company.id}`}
                       className="flex-1"
                     >
                       <Button variant="outline" size="sm" className="w-full">
                         <Briefcase className="mr-2 h-4 w-4" />
                         Manage Jobs
                       </Button>
-                    </Link>
+                    </Link> */}
 
                     <Button
                       variant="outline"
@@ -432,52 +410,6 @@ export default function CompaniesPage() {
           </Dialog>
 
           {/* Edit Company Modal */}
-          {/* <Dialog open={editOpen} onOpenChange={setEditOpen}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Edit Company</DialogTitle>
-              <DialogDescription>Update company information</DialogDescription>
-            </DialogHeader>
-
-            <div className="flex flex-col gap-4 py-4">
-              <Input
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                placeholder="Company name"
-              />
-
-              <Input
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-                placeholder="Location"
-              />
-
-              <Input
-                name="website"
-                value={formData.website}
-                onChange={handleInputChange}
-                placeholder="Website"
-              />
-
-              <Textarea
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="Description"
-              />
-            </div>
-
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setEditOpen(false)}>
-                Cancel
-              </Button>
-
-              <Button onClick={handleUpdateCompany}>Update Company</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog> */}
           <EditCompanyModal
             open={editOpen}
             company={selectedCompany}
