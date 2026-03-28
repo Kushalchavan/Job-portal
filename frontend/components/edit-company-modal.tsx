@@ -44,7 +44,6 @@ export default function EditCompanyModal({
   };
 
   const handleUpdate = async () => {
-    console.log("Update clicked", form);
     if (!company) return;
 
     try {

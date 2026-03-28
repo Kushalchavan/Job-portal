@@ -13,15 +13,17 @@ export const getJobById = async (id: number): Promise<Job> => {
 
 export const createJob = async (data: CreateJobInput): Promise<Job> => {
   const res = await api.post("/jobs", data);
-  return res.data;
+  return res.data.data;
 };
 
-export const updateJob = async (id: number, data: UpdateJobInput): Promise<Job> => {
+export const updateJob = async (
+  id: number,
+  data: UpdateJobInput,
+): Promise<Job> => {
   const res = await api.put(`/jobs/${id}`, data);
-  return res.data;
+  return res.data.data;
 };
 
 export const deleteJob = async (id: number): Promise<void> => {
-  const res = await api.delete(`/jobs/${id}`);
-  return res.data;
+  await api.delete(`/jobs/${id}`);
 };

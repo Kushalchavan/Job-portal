@@ -11,12 +11,15 @@ import { Briefcase, Plus, Trash2, Eye } from "lucide-react";
 import Link from "next/link";
 import CreateJobModal from "@/components/create-job-modal";
 import ProtectedRoute from "@/components/protected-route";
+import EditJobModal from "@/components/job-edit-modal";
 
 export default function JobsDashboardPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
   const fetchJobs = async () => {
     try {
@@ -116,7 +119,7 @@ export default function JobsDashboardPage() {
                     </p>
                   </div>
 
-                  <div className="flex gap-2 mt-6">
+                  <div className="grid grid-cols-2 gap-2 mt-6">
                     <Link href={`/jobs/${job.id}`} className="flex-1">
                       <Button variant="outline" size="sm" className="w-full">
                         <Eye className="w-4 h-4 mr-2" />
@@ -129,6 +132,17 @@ export default function JobsDashboardPage() {
                         View Applicants
                       </Button>
                     </Link>
+
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedJob(job);
+                        setEditOpen(true);
+                      }}
+                    >
+                      Edit
+                    </Button>
 
                     <Button
                       variant="destructive"
@@ -170,10 +184,19 @@ export default function JobsDashboardPage() {
             </Card>
           )}
         </div>
+        {/* /Create Job modal */}
         <CreateJobModal
           open={isCreateOpen}
           onClose={() => setIsCreateOpen(false)}
           onCreated={fetchJobs}
+        />
+        {/* Update Job modal */}
+        <EditJobModal
+          open={editOpen}
+          job={selectedJob}
+          companies={companies}
+          onClose={() => setEditOpen(false)}
+          onUpdated={fetchJobs}
         />
       </div>
     </ProtectedRoute>

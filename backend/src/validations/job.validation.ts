@@ -2,7 +2,7 @@ import * as z from "zod";
 
 const baseJobSchema = z.object({
   title: z.string().min(3),
-  description: z.string().min(10),
+  description: z.string(),
   minSalary: z.coerce.number().int().nonnegative(),
   maxSalary: z.coerce.number().int().nonnegative(),
   location: z.string(),
@@ -25,6 +25,4 @@ export const createJobSchema = baseJobSchema
   });
 
 // for updating job
-export const updateJobSchema = baseJobSchema.partial().extend({
-  id: z.number().int().positive(),
-});
+export const updateJobSchema = baseJobSchema.partial();
