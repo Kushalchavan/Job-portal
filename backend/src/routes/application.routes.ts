@@ -4,6 +4,7 @@ import {
   getApplicantsByJobController,
   getMyApplicationsController,
   updateApplicationStatusController,
+  withdrawApplicationController,
 } from "../controller/application.controller";
 import { requireRole } from "../middlewares/role.middleware";
 import { validate } from "../middlewares/validation.middleware";
@@ -15,17 +16,12 @@ const router = express.Router();
 router.post(
   "/",
   verifyJWT,
-  requireRole("CANDIDATE"),
+  requireRole("USE"),
   validate(applyJobSchema),
   applyToJobController,
 );
 
-router.get(
-  "/me",
-  verifyJWT,
-  requireRole("CANDIDATE"),
-  getMyApplicationsController,
-);
+router.get("/me", verifyJWT, requireRole("USER"), getMyApplicationsController);
 
 router.get(
   "/job/:jobId",
@@ -44,8 +40,8 @@ router.patch(
 router.delete(
   "/:id",
   verifyJWT,
-  requireRole("CANDIDATE"),
-  updateApplicationStatusController,
+  requireRole("USER"),
+  withdrawApplicationController,
 );
 
 export default router;

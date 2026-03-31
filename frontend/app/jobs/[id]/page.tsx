@@ -47,7 +47,7 @@ export default function JobDetailsPage() {
   const handleApply = async () => {
     try {
       await applyJob(jobId);
-      setIsApplied(true);
+      console.log(applyJob)
     } catch (error) {
       console.error(error);
     }

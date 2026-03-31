@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-import { isAuthenticated } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { removeToken } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -25,7 +25,7 @@ export default function Navbar() {
   
 
   // Derived state
-  const isLoggedIn = isAuthenticated();
+  const isLoggedIn = useAuth();
 
   // Logout properly
   const handleLogout = () => {

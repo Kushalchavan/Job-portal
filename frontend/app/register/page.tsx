@@ -16,8 +16,8 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [userType, setUserType] = useState<"jobseeker" | "recruiter">(
-    "jobseeker",
+  const [userType, setUserType] = useState<"candidate" | "recruiter">(
+    "candidate",
   );
   const router = useRouter();
 
@@ -68,14 +68,14 @@ export default function RegisterPage() {
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
-                  onClick={() => setUserType("jobseeker")}
+                  onClick={() => setUserType("candidate")}
                   className={`p-3 rounded-lg border-2 transition text-sm font-medium ${
-                    userType === "jobseeker"
+                    userType === "candidate"
                       ? "border-accent bg-accent/5 text-accent"
                       : "border-border text-muted-foreground hover:border-border/80"
                   }`}
                 >
-                  Job Seeker
+                  Candidate
                 </button>
                 <button
                   type="button"
