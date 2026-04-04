@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Eye, EyeOff } from "lucide-react";
-import { setToken } from "@/lib/auth";
 import { registerUser } from "@/services/auth.service";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext"; 
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -20,20 +20,21 @@ export default function RegisterPage() {
     "candidate",
   );
   const router = useRouter();
+  const { login } = useAuth(); // use context
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const data = await registerUser({
+      const res = await registerUser({
         name,
         email,
         password,
         role: userType === "recruiter" ? "RECRUITER" : "USER",
       });
 
-      setToken(data.data.user);
+      login(res); 
       router.push("/jobs");
     } catch (error) {
       console.error(error);
@@ -55,11 +56,6 @@ export default function RegisterPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* {error && (
-              <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
-                {error}
-              </div>
-            )} */}
             {/* User Type Selection */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">
@@ -91,7 +87,7 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Full Name Input */}
+            {/* Name */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">
                 Full Name
@@ -105,7 +101,7 @@ export default function RegisterPage() {
               />
             </div>
 
-            {/* Email Input */}
+            {/* Email */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">
                 Email Address
@@ -119,7 +115,7 @@ export default function RegisterPage() {
               />
             </div>
 
-            {/* Password Input */}
+            {/* Password */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">
                 Password
@@ -149,7 +145,7 @@ export default function RegisterPage() {
               </p>
             </div>
 
-            {/* Submit Button */}
+            {/* Submit */}
             <Button
               disabled={loading}
               type="submit"
@@ -166,8 +162,8 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Sign In Link */}
-          <div className=" text-center">
+          {/* Login Link */}
+          <div className="text-center">
             <p className="text-muted-foreground text-sm">
               Already have an account?{" "}
               <Link

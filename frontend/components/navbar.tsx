@@ -2,19 +2,16 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { LogOut, Menu, X, Briefcase } from "lucide-react";
+import { LogOut, Menu, X, Briefcase, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
-import { Sun, Moon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-
-import { useAuth } from "@/hooks/useAuth";
-import { removeToken } from "@/lib/auth";
+import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -22,16 +19,11 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { setTheme } = useTheme();
   const router = useRouter();
-  
 
-  // Derived state
-  const isLoggedIn = useAuth();
-
-  // Logout properly
+  const { isAuthenticated, user, logout } = useAuth(); 
   const handleLogout = () => {
-    removeToken(); // remove token from localStorage
-    router.push("/login"); // redirect to login page
-    router.refresh(); // re-render UI without reload
+    logout(); // logout
+    router.push("/login");
   };
 
   return (
@@ -88,23 +80,23 @@ export default function Navbar() {
             </DropdownMenu>
 
             {/* Auth Section */}
-            {isLoggedIn ? (
+            {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Image
                     src="https://i.pravatar.cc/40"
                     alt="user"
+                    width={40}
+                    height={40}
                     className="w-10 h-10 rounded-full cursor-pointer border-2 border-border"
-                    width={20}
-                    height={20}
                   />
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent align="end" className="w-56">
                   <div className="p-3 border-b border-border">
-                    <p className="text-sm font-semibold">User</p>
+                    <p className="text-sm font-semibold">{user?.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      user@gmail.com
+                      {user?.email}
                     </p>
                   </div>
 
@@ -156,7 +148,7 @@ export default function Navbar() {
             </Link>
 
             <div className="border-t border-border pt-3 space-y-2">
-              {isLoggedIn ? (
+              {isAuthenticated ? (
                 <>
                   <Link href="/dashboard">
                     <Button variant="ghost" className="w-full justify-start">

@@ -10,7 +10,7 @@ interface ApplyJobInput {
 export const applyToJob = async (userId: number, data: ApplyJobInput) => {
   const { jobId, resumeUrl } = data;
 
-  //  Check if job exists
+  // Check if job exists
   const job = await prisma.job.findUnique({
     where: { id: jobId },
   });
@@ -19,7 +19,7 @@ export const applyToJob = async (userId: number, data: ApplyJobInput) => {
     throw new AppError("Job not found", 404);
   }
 
-  //  Prevent duplicate application
+  // Prevent duplicate application
   const existingApplication = await prisma.application.findUnique({
     where: {
       userId_jobId: {
@@ -33,7 +33,7 @@ export const applyToJob = async (userId: number, data: ApplyJobInput) => {
     throw new AppError("You have already applied to this job", 400);
   }
 
-  //  Create application
+  // Create application
   const application = await prisma.application.create({
     data: {
       userId,
@@ -45,11 +45,16 @@ export const applyToJob = async (userId: number, data: ApplyJobInput) => {
   return application;
 };
 
+// FIXED HERE
 export const getMyApplications = async (userId: number) => {
   return prisma.application.findMany({
     where: { userId },
     include: {
-      job: true,
+      job: {
+        include: {
+          company: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",

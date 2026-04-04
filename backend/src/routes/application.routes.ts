@@ -16,7 +16,7 @@ const router = express.Router();
 router.post(
   "/",
   verifyJWT,
-  requireRole("USE"),
+  requireRole("USER"),
   validate(applyJobSchema),
   applyToJobController,
 );

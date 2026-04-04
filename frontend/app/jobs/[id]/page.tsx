@@ -15,7 +15,10 @@ import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { getJobById } from "@/services/job.service";
 import { Job } from "@/types/job.types";
-import { applyJob } from "@/services/application.service";
+import {
+  applyJob,
+  getMyApplications,
+} from "@/services/application.service";
 import ProtectedRoute from "@/components/protected-route";
 
 export default function JobDetailsPage() {
@@ -25,36 +28,67 @@ export default function JobDetailsPage() {
   const [loading, setLoading] = useState(true);
 
   const params = useParams();
-  const jobId = Number(params?.id);
+
+  // Safe parsing
+  const jobId = parseInt(params.id as string, 10);
 
   useEffect(() => {
-    if (!jobId) return;
+    if (isNaN(jobId)) {
+      console.error("Invalid jobId:", params.id);
+      setLoading(false);
+      return;
+    }
 
-    const fetchJob = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getJobById(jobId);
-        setJob(data);
+        const [jobData, applications] = await Promise.all([
+          getJobById(jobId),
+          getMyApplications(),
+        ]);
+
+        setJob(jobData);
+
+        // Check if already applied
+        const alreadyApplied = applications.some(
+          (app) => app.jobId === jobId
+        );
+
+        setIsApplied(alreadyApplied);
       } catch (error) {
-        console.error(error);
+        console.error("Fetch error:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchJob();
-  }, [jobId]);
+    fetchData();
+  }, [jobId, params.id]);
 
   const handleApply = async () => {
+    if (isNaN(jobId)) return;
+
     try {
-      await applyJob(jobId);
-      console.log(applyJob)
-    } catch (error) {
-      console.error(error);
+      const res = await applyJob(jobId);
+      console.log("Application success:", res);
+
+      setIsApplied(true); //update UI instantly
+    } catch (error: any) {
+      console.error("Apply error:", error);
+
+      const message = error?.response?.data?.message;
+
+      if (message) {
+        alert(message); // later replace with toast
+      }
     }
   };
 
   if (loading) {
     return <p className="text-center py-10">Loading job...</p>;
+  }
+
+  if (isNaN(jobId)) {
+    return <p className="text-center py-10 text-red-500">Invalid Job ID</p>;
   }
 
   if (!job) {
@@ -81,126 +115,46 @@ export default function JobDetailsPage() {
 
   return (
     <ProtectedRoute>
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-4xl px-4 py-8">
-        {/* Back Button */}
-        <Link
-          href="/jobs"
-          className="inline-flex items-center gap-2 text-accent hover:text-accent/80 transition mb-8"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Jobs
-        </Link>
+      <div className="min-h-screen bg-background">
+        <div className="mx-auto max-w-4xl px-4 py-8">
+          {/* Back Button */}
+          <Link
+            href="/jobs"
+            className="inline-flex items-center gap-2 text-accent hover:text-accent/80 transition mb-8"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Jobs
+          </Link>
 
-        {/* Header Card */}
-        <Card className="p-6 sm:p-8 mb-8 border border-border">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6 mb-6">
-            <div className="flex-1">
-              <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
-                {job.title}
-              </h1>
-              <p className="text-lg text-muted-foreground">
-                {job.company?.name ?? "Unknown Company"}
-              </p>
-            </div>
-
-            <div className="flex gap-3 sm:flex-col">
-              <Button
-                variant={isSaved ? "default" : "outline"}
-                onClick={() => setIsSaved(!isSaved)}
-                className={
-                  isSaved
-                    ? "bg-accent text-accent-foreground"
-                    : "border-border"
-                }
-              >
-                <Heart
-                  className={`w-4 h-4 ${isSaved ? "fill-current" : ""}`}
-                />
-                <span className="hidden sm:inline ml-2">
-                  {isSaved ? "Saved" : "Save"}
-                </span>
-              </Button>
-
-              <Button
-                onClick={handleApply}
-                disabled={isApplied}
-                className={
-                  isApplied
-                    ? "bg-green-600 hover:bg-green-700"
-                    : "bg-accent text-accent-foreground hover:bg-accent/90"
-                }
-              >
-                {isApplied ? "✓ Applied" : "Apply Now"}
-              </Button>
-            </div>
-          </div>
-
-          {/* Job Meta */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-b border-border py-6">
-            <div>
-              <div className="flex items-center gap-2 text-accent mb-1">
-                <DollarSign className="w-4 h-4" />
-                <span className="text-sm text-muted-foreground">Salary</span>
+          {/* Header Card */}
+          <Card className="p-6 sm:p-8 mb-8 border border-border">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6 mb-6">
+              <div className="flex-1">
+                <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
+                  {job.title}
+                </h1>
+                <p className="text-lg text-muted-foreground">
+                  {job.company?.name ?? "Unknown Company"}
+                </p>
               </div>
-              <p className="font-semibold text-foreground">{formattedSalary}</p>
-            </div>
 
-            <div>
-              <div className="flex items-center gap-2 text-accent mb-1">
-                <Briefcase className="w-4 h-4" />
-                <span className="text-sm text-muted-foreground">Type</span>
-              </div>
-              <p className="font-semibold text-foreground">
-                {job.employmentType}
-              </p>
-            </div>
-
-            <div>
-              <div className="flex items-center gap-2 text-accent mb-1">
-                <Users className="w-4 h-4" />
-                <span className="text-sm text-muted-foreground">Level</span>
-              </div>
-              <p className="font-semibold text-foreground">{job.level}</p>
-            </div>
-
-            <div>
-              <div className="flex items-center gap-2 text-accent mb-1">
-                <MapPin className="w-4 h-4" />
-                <span className="text-sm text-muted-foreground">Location</span>
-              </div>
-              <p className="font-semibold text-foreground">{job.location}</p>
-            </div>
-          </div>
-        </Card>
-
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            <Card className="p-6 border border-border">
-              <h2 className="text-2xl font-bold text-foreground mb-4">
-                About the Role
-              </h2>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                {job.description}
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                This is an exciting opportunity to grow your career with one of
-                the industry leaders. You&apos;ll work on challenging projects,
-                collaborate with talented professionals, and have the chance to
-                make a real impact.
-              </p>
-            </Card>
-          </div>
-
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-20 space-y-6">
-              {/* Apply Card */}
-              <Card className="p-6 border-2 border-accent bg-accent/5">
-                <h3 className="font-semibold text-foreground mb-4">
-                  Ready to apply?
-                </h3>
+              <div className="flex gap-3 sm:flex-col">
+                <Button
+                  variant={isSaved ? "default" : "outline"}
+                  onClick={() => setIsSaved(!isSaved)}
+                  className={
+                    isSaved
+                      ? "bg-accent text-accent-foreground"
+                      : "border-border"
+                  }
+                >
+                  <Heart
+                    className={`w-4 h-4 ${isSaved ? "fill-current" : ""}`}
+                  />
+                  <span className="hidden sm:inline ml-2">
+                    {isSaved ? "Saved" : "Save"}
+                  </span>
+                </Button>
 
                 <Button
                   onClick={handleApply}
@@ -213,35 +167,97 @@ export default function JobDetailsPage() {
                 >
                   {isApplied ? "✓ Applied" : "Apply Now"}
                 </Button>
+              </div>
+            </div>
 
-                <p className="text-xs text-muted-foreground mt-3 text-center">
-                  Free to apply • Takes less than 2 minutes
+            {/* Job Meta */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-b border-border py-6">
+              <div>
+                <div className="flex items-center gap-2 text-accent mb-1">
+                  <DollarSign className="w-4 h-4" />
+                  <span className="text-sm text-muted-foreground">Salary</span>
+                </div>
+                <p className="font-semibold text-foreground">
+                  {formattedSalary}
                 </p>
-              </Card>
+              </div>
 
-              {/* Company Info */}
+              <div>
+                <div className="flex items-center gap-2 text-accent mb-1">
+                  <Briefcase className="w-4 h-4" />
+                  <span className="text-sm text-muted-foreground">Type</span>
+                </div>
+                <p className="font-semibold text-foreground">
+                  {job.employmentType}
+                </p>
+              </div>
+
+              <div>
+                <div className="flex items-center gap-2 text-accent mb-1">
+                  <Users className="w-4 h-4" />
+                  <span className="text-sm text-muted-foreground">Level</span>
+                </div>
+                <p className="font-semibold text-foreground">
+                  {job.level}
+                </p>
+              </div>
+
+              <div>
+                <div className="flex items-center gap-2 text-accent mb-1">
+                  <MapPin className="w-4 h-4" />
+                  <span className="text-sm text-muted-foreground">
+                    Location
+                  </span>
+                </div>
+                <p className="font-semibold text-foreground">
+                  {job.location}
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Main Content */}
+            <div className="lg:col-span-2 space-y-8">
               <Card className="p-6 border border-border">
-                <h3 className="font-semibold text-foreground mb-4">
-                  About {job.company?.name ?? "this company"}
-                </h3>
-
-                <p className="text-sm text-muted-foreground mb-4">
-                  {job.company?.name ?? "This company"} is a leading company in
-                  the tech industry, known for innovation and excellence.
+                <h2 className="text-2xl font-bold text-foreground mb-4">
+                  About the Role
+                </h2>
+                <p className="text-muted-foreground leading-relaxed mb-4">
+                  {job.description}
                 </p>
-
-                <Link
-                  href={`/dashboard/companies/${job.company?.id}`}
-                  className="text-accent text-sm font-medium hover:text-accent/80 transition"
-                >
-                  View company profile →
-                </Link>
               </Card>
+            </div>
+
+            {/* Sidebar */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-20 space-y-6">
+                <Card className="p-6 border-2 border-accent bg-accent/5">
+                  <h3 className="font-semibold text-foreground mb-4">
+                    Ready to apply?
+                  </h3>
+
+                  <Button
+                    onClick={handleApply}
+                    disabled={isApplied}
+                    className={
+                      isApplied
+                        ? "bg-green-600 hover:bg-green-700"
+                        : "bg-accent text-accent-foreground hover:bg-accent/90"
+                    }
+                  >
+                    {isApplied ? "✓ Applied" : "Apply Now"}
+                  </Button>
+
+                  <p className="text-xs text-muted-foreground mt-3 text-center">
+                    Free to apply • Takes less than 2 minutes
+                  </p>
+                </Card>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
     </ProtectedRoute>
   );
 }

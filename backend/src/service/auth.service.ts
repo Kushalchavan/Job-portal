@@ -34,7 +34,15 @@ export const registerUser = async (
     role: user.role,
   });
 
-  return token;
+  return {
+    token,
+    user:{
+      id: user.id,
+      role: user.role,
+      email: user.email,
+      name: user.name,
+    }
+  };
 };
 
 // Login User
@@ -53,7 +61,15 @@ export const loginUser = async (email: string, password: string) => {
 
   const token = signToken({ id: user.id, role: user.role });
 
-  return token;
+  return {
+    token,
+    user:{
+      id: user.id,
+      role: user.role,
+      email: user.email,
+      name: user.name,
+    }
+  };
 };
 
 // get current user info

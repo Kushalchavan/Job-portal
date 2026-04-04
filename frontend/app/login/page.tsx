@@ -7,8 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Eye, EyeOff } from "lucide-react";
 import { loginUser } from "@/services/auth.service";
-import { setToken } from "@/lib/auth";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -16,17 +16,15 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const data = await loginUser({
-        email,
-        password,
-      });
+      const res = await loginUser({ email, password });
 
-      setToken(data.data.token);
+      login(res);
       router.push("/jobs");
     } catch (error) {
       console.error(error);

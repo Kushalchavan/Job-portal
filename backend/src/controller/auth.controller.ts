@@ -7,41 +7,48 @@ import {
 } from "../service/auth.service";
 import { AppError } from "../utils/AppError";
 
+
+// REGISTER
 export const registerController = asyncHandler(
   async (req: Request, res: Response) => {
     const { name, email, password, role } = req.body;
-    const token = await registerUser(name, email, password, role);
+
+    const data = await registerUser(name, email, password, role);
 
     res.status(201).json({
       success: true,
       message: "User registered successfully",
-      data: { token },
+      data, 
     });
   },
 );
 
+
+// LOGIN
 export const loginController = asyncHandler(
   async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
-    const token = await loginUser(email, password);
+    const data = await loginUser(email, password);
 
     res.status(200).json({
       success: true,
       message: "User logged in successfully",
-      data: { token },
+      data, 
     });
   },
 );
 
+// GET CURRENT USER
 export const getMe = asyncHandler(async (req: Request, res: Response) => {
   if (!req.user) {
     throw new AppError("Unauthorized", 401);
   }
+
   const user = await getCurrentUser(req.user.id);
 
   res.status(200).json({
     success: true,
-    data: { user },
+    data: user,
   });
 });

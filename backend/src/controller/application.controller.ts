@@ -61,7 +61,7 @@ export const updateApplicationStatusController = asyncHandler(
     }
 
     const application = await updateApplicationStatus(
-      Number(req.params.applicationId),
+      Number(req.params.id),
       req.body.status,
     );
 
@@ -79,7 +79,7 @@ export const withdrawApplicationController = asyncHandler(
       throw new AppError("Unauthorized", 401);
     }
     const application = await withdrawApplication(
-      Number(req.params.applicationId),
+      Number(req.params.id),
       req.user.id,
     );
 

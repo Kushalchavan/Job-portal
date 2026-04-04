@@ -4,11 +4,8 @@ export interface JobsResponse {
   jobs: Job[];
 }
 
- export interface AuthResponse {
+export interface ApiResponse<T> {
   success: boolean;
-  message: string;
-  data: {
-    token: string; // JWT token
-  };
+  message?: string;
+  data: T;
 }
-
