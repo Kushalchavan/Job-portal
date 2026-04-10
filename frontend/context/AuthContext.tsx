@@ -10,6 +10,7 @@ interface AuthContextType {
   login: (data: AuthData) => void;
   logout: () => void;
   isAuthenticated: boolean;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -17,6 +18,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setAuthToken] = useState<string | null>(null);
   const [user, setUser] = useState<AuthData["user"] | null>(null);
+  const [isLoading, setIsLoading] = useState(true); 
 
   useEffect(() => {
     const storedToken = getToken();
@@ -30,17 +32,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(parsedUser);
       } catch (error) {
         console.error("Invalid user in localStorage", error);
-        localStorage.removeItem("user"); // cleanup bad data
+        localStorage.removeItem("user");
       }
     }
+
+    setIsLoading(false); 
   }, []);
 
   const login = (data: AuthData) => {
-    // Save to localStorage
     setToken(data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
 
-    // Update state
     setAuthToken(data.token);
     setUser(data.user);
   };
@@ -61,6 +63,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         login,
         logout,
         isAuthenticated: !!token,
+        isLoading, 
       }}
     >
       {children}
