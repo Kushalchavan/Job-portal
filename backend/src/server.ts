@@ -7,6 +7,7 @@ import authRoutes from "./routes/auth.routes";
 import jobRoutes from "./routes/job.routes";
 import companyRoutes from "./routes/company.route";
 import applicationRoutes from "./routes/application.routes";
+import logger from "./config/logger";
 
 const app = express();
 
@@ -24,5 +25,6 @@ app.use("/api/v1/applications", applicationRoutes);
 app.use(errorHandler);
 
 app.listen(env.port, () => {
-  console.log(`Application is running successfully on port ${env.port}`);
+  logger.info(`Server is running on port ${env.port}`);
+  logger.info('Press Ctrl+C to stop the server');
 });
