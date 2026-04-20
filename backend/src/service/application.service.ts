@@ -1,6 +1,7 @@
 import { ApplicationStatus } from "@prisma/client";
 import { prisma } from "../config/prisma";
 import { AppError } from "../utils/AppError";
+import { eventEmitter } from "../events/eventEmitter";
 
 interface ApplyJobInput {
   jobId: number;
@@ -41,6 +42,8 @@ export const applyToJob = async (userId: number, data: ApplyJobInput) => {
       resumeUrl: resumeUrl ?? null,
     },
   });
+
+  eventEmitter.emit("APPLICATION_CREATED", {userId, jobTitle: job.title});
 
   return application;
 };

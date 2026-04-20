@@ -8,6 +8,8 @@ import jobRoutes from "./routes/job.routes";
 import companyRoutes from "./routes/company.route";
 import applicationRoutes from "./routes/application.routes";
 import logger from "./config/logger";
+import "./listeners/notification.listener";
+import notificationRoutes from "./routes/notification.routes";
 
 const app = express();
 
@@ -20,6 +22,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/jobs", jobRoutes);
 app.use("/api/v1/companies", companyRoutes);
 app.use("/api/v1/applications", applicationRoutes);
+app.use("/api/v1/notifications", notificationRoutes);
 
 // Error handler
 app.use(errorHandler);
