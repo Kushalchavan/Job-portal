@@ -1,0 +1,35 @@
+# dependencies
+node_modules
+
+# logs
+logs
+*.log
+
+# env files
+.env
+.env.local
+.env.production
+.env.test
+
+# turbo
+.turbo
+
+# next.js
+.next
+
+# build
+dist
+build
+
+# OS
+.DS_Store
+Thumbs.db
+
+# vscode
+.vscode
+
+# prisma
+.prisma
+
+# coverage
+coverage
