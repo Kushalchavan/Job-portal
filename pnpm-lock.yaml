@@ -17,6 +17,12 @@ importers:
       '@prisma/client':
         specifier: ^6.19.2
         version: 6.19.3(prisma@6.19.3(typescript@5.9.3))(typescript@5.9.3)
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
+      '@repo/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       bcrypt:
         specifier: ^6.0.0
         version: 6.0.0
@@ -84,6 +90,12 @@ importers:
       '@hugeicons/react':
         specifier: ^1.1.5
         version: 1.1.6(react@19.2.3)
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
+      '@repo/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       axios:
         specifier: ^1.13.6
         version: 1.16.1
@@ -148,6 +160,10 @@ importers:
       typescript:
         specifier: ^5
         version: 5.9.3
+
+  packages/tsconfig: {}
+
+  packages/types: {}
 
 packages:
 
