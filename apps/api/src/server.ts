@@ -10,6 +10,8 @@ import applicationRoutes from "./routes/application.routes";
 import logger from "./config/logger";
 import "./listeners/notification.listener";
 import notificationRoutes from "./routes/notification.routes";
+import resumeRoutes from "./modules/resumes/resume.route";
+import './listeners/resume.listener'
 
 const app = express();
 
@@ -23,6 +25,7 @@ app.use("/api/v1/jobs", jobRoutes);
 app.use("/api/v1/companies", companyRoutes);
 app.use("/api/v1/applications", applicationRoutes);
 app.use("/api/v1/notifications", notificationRoutes);
+app.use("/api/v1/resumes", resumeRoutes);
 
 // Error handler
 app.use(errorHandler);

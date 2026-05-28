@@ -7,6 +7,109 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id            Int            @id @default(autoincrement())
+  name          String
+  email         String         @unique
+  password      String
+  role          Role           @default(USER)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  applications  Application[]
+  companies     Company[]
+  jobs          Job[]
+  notifications Notification[]
+  resumes       Resume[]
+}
+
+model Application {
+  id        Int               @id @default(autoincrement())
+  userId    Int
+  jobId     Int
+  status    ApplicationStatus @default(APPLIED)
+  resumeUrl String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  job       Job               @relation(fields: [jobId], references: [id])
+  user      User              @relation(fields: [userId], references: [id])
+
+  @@unique([userId, jobId])
+  @@index([userId])
+  @@index([jobId])
+}
+
+model Job {
+  id             Int            @id @default(autoincrement())
+  title          String
+  description    String
+  minSalary      Int
+  maxSalary      Int
+  location       String
+  minExperience  Int
+  maxExperience  Int
+  level          Level          @default(JUNIOR)
+  employmentType EmploymentType @default(FULL_TIME)
+  isActive       Boolean        @default(true)
+  deletedAt      DateTime?
+  companyId      Int
+  createdById    Int
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  applications   Application[]
+  company        Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdBy      User           @relation(fields: [createdById], references: [id])
+
+  @@index([title])
+  @@index([location])
+  @@index([employmentType])
+  @@index([companyId])
+  @@index([location, employmentType])
+}
+
+model Company {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  website     String?
+  location    String
+  createdById Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  jobs        Job[]
+
+  @@index([createdById])
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    Int
+  type      NotificationType
+  message   String
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Resume {
+  id            String       @id @default(cuid())
+  userId        Int
+  originalName  String
+  storageKey    String
+  mimeType      String
+  size          Int
+  status        ResumeStatus @default(PENDING)
+  extractedText String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
 enum Role {
   USER
   RECRUITER
@@ -40,133 +143,9 @@ enum NotificationType {
   APPLICATION_CREATED
 }
 
-model User {
-  id       Int    @id @default(autoincrement())
-  name     String
-  email    String @unique
-  password String
-  role     Role   @default(USER)
-
-  applications Application[]
-  resumes      Resume[]
-
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  jobs          Job[]
-  companies     Company[]
-  notifications Notification[]
-}
-
-model Application {
-  id        Int               @id @default(autoincrement())
-  userId    Int
-  jobId     Int
-  status    ApplicationStatus @default(APPLIED)
-  resumeUrl String?
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
-
-  user User @relation(fields: [userId], references: [id])
-  job  Job  @relation(fields: [jobId], references: [id])
-
-  @@unique([userId, jobId]) /// to prevent duplicate application
-  @@index([userId])
-  @@index([jobId]) // without index query becomes slower  
-}
-
-model Job {
-  id             Int            @id @default(autoincrement())
-  title          String
-  description    String
-  minSalary      Int
-  maxSalary      Int
-  location       String
-  minExperience  Int
-  maxExperience  Int
-  level          Level          @default(JUNIOR)
-  employmentType EmploymentType @default(FULL_TIME)
-
-  // Job Visiblity & lifecycle
-  isActive  Boolean   @default(true)
-  deletedAt DateTime?
-
-  companyId Int
-  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-
-  createdById Int
-  createdBy   User @relation(fields: [createdById], references: [id])
-
-  applications Application[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Indexes for performance
-  @@index([title])
-  @@index([location])
-  @@index([employmentType])
-  @@index([companyId])
-  @@index([location, employmentType])
-}
-
-model Company {
-  id          Int     @id @default(autoincrement())
-  name        String
-  description String
-  website     String?
-  location    String
-
-  createdById Int
-  createdBy   User @relation(fields: [createdById], references: [id], onDelete: Cascade)
-
-  jobs Job[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([createdById])
-}
-
-model Notification {
-  id String @id @default(uuid())
-
-  userId Int
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  type    NotificationType
-  message String
-
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
-
-  @@index([userId])
-}
-
 enum ResumeStatus {
   PENDING
   PROCESSING
   COMPLETED
   FAILED
-}
-
-model Resume {
-  id     String @id @default(cuid())
-  userId Int
-
-  originalName String
-  storageKey   String
-  mimeType     String
-  size         Int
-
-  status ResumeStatus @default(PENDING)
-
-  extractedText String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([status])
 }
