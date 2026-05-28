@@ -90,6 +90,9 @@ importers:
       '@hugeicons/react':
         specifier: ^1.1.5
         version: 1.1.6(react@19.2.3)
+      '@repo/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
       '@repo/tsconfig':
         specifier: workspace:*
         version: link:../../packages/tsconfig
@@ -160,6 +163,12 @@ importers:
       typescript:
         specifier: ^5
         version: 5.9.3
+
+  packages/schemas:
+    dependencies:
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
 
   packages/tsconfig: {}
 
