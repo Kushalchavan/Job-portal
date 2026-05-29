@@ -1,10 +1,21 @@
-import fs from "fs";
-import pdfParse from "pdf-parse";
+import PDFParser from "pdf2json";
 
-export const extractTextFromPDF = async (filePath: string) => {
-  const dataBuffer = fs.readFileSync(filePath);
+export const extractTextFromPDF = (
+  filePath: string
+): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const pdfParser = new PDFParser();
 
-  const pdfData = await pdfParse(dataBuffer);
+    pdfParser.on("pdfParser_dataError", (errData) => {
+      reject(errData.parserError);
+    });
 
-  return pdfData.text;
+    pdfParser.on("pdfParser_dataReady", () => {
+      const text = pdfParser.getRawTextContent();
+
+      resolve(text);
+    });
+
+    pdfParser.loadPDF(filePath);
+  });
 };

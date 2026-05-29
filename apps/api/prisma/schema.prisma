@@ -99,6 +99,8 @@ model Resume {
   originalName  String
   storageKey    String
   mimeType      String
+  skills        String[]
+  parseData     Json?
   size          Int
   status        ResumeStatus @default(PENDING)
   extractedText String?

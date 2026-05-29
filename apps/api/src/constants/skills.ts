@@ -1,0 +1,17 @@
+export const SKILLS = [
+  "React",
+  "Next.js",
+  "Node.js",
+  "Express",
+  "MongoDB",
+  "PostgreSQL",
+  "Prisma",
+  "Redis",
+  "TypeScript",
+  "JavaScript",
+  "Docker",
+  "Kubernetes",
+  "AWS",
+  "GraphQL",
+  "Tailwind CSS",
+];
