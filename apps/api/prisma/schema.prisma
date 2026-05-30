@@ -55,12 +55,11 @@ model Job {
   createdById    Int
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
+  requiredSkills String[]       @default([])
   applications   Application[]
   company        Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
   createdBy      User           @relation(fields: [createdById], references: [id])
   resumeMatches  ResumeMatch[]
-
-  requiredSkills String[] @default([])
 
   @@index([title])
   @@index([location])
@@ -102,13 +101,13 @@ model Resume {
   originalName  String
   storageKey    String
   mimeType      String
-  skills        String[]
-  parseData     Json?
   size          Int
   status        ResumeStatus  @default(PENDING)
   extractedText String?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+  skills        String[]
+  parseData     Json?
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   resumeMatches ResumeMatch[]
 
@@ -117,22 +116,16 @@ model Resume {
 }
 
 model ResumeMatch {
-  id String @id @default(cuid())
-
-  resumeId String
-  jobId    Int
-
-  score Int
-
+  id            String   @id @default(cuid())
+  resumeId      String
+  jobId         Int
+  score         Int
   matchedSkills String[]
   missingSkills String[]
-
-  summary String
-
-  createdAt DateTime @default(now())
-
-  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
-  job    Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  summary       String
+  createdAt     DateTime @default(now())
+  job           Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  resume        Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
 
   @@index([resumeId])
   @@index([jobId])

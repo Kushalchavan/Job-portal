@@ -1,7 +1,7 @@
 import { prisma } from "../config/prisma";
 import { eventEmitter } from "../events/eventEmitter";
 import { EVENTS } from "../events/events.contants";
-import { extractJobSkills } from "../modules/ai/job-parser.service";
+import { extractSkills } from "../utils/extractSkills";
 
 eventEmitter.on(EVENTS.JOB_CREATED_EVENT, async (payload) => {
   try {
@@ -14,13 +14,32 @@ eventEmitter.on(EVENTS.JOB_CREATED_EVENT, async (payload) => {
     });
 
     if (!job) {
+      console.log("Job not found");
       return;
     }
 
-    const result = await extractJobSkills(job.description);
+    console.log("=================================");
+    console.log("Job Description:");
+    console.log(job.description);
 
-    console.log(result);
+    const skills = extractSkills(job.description);
+
+    console.log("=================================");
+    console.log("Extracted Skills:");
+    console.log(skills);
+    console.log("=================================");
+
+    await prisma.job.update({
+      where: {
+        id: job.id,
+      },
+      data: {
+        requiredSkills: skills,
+      },
+    });
+
+    console.log("Required skills updated successfully");
   } catch (error) {
-    console.error(error);
+    console.error("Job processing failed:", error);
   }
 });

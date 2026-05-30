@@ -33,7 +33,6 @@ router.put(
   validate(updateJobSchema),
   updateJobController,
 );
-
 router.delete("/:id", verifyJWT, requireRole("RECRUITER"), deleteJobController);
 
 export default router;

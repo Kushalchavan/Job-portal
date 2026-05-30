@@ -11,7 +11,9 @@ import logger from "./config/logger";
 import "./listeners/notification.listener";
 import notificationRoutes from "./routes/notification.routes";
 import resumeRoutes from "./modules/resumes/resume.route";
-import './listeners/resume.listener';import "./listeners/job.listener";
+import "./listeners/resume.listener";
+import "./listeners/job.listener";
+import matchingRoutes from "./modules/matching/matching.route";
 
 const app = express();
 
@@ -26,11 +28,12 @@ app.use("/api/v1/companies", companyRoutes);
 app.use("/api/v1/applications", applicationRoutes);
 app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/resumes", resumeRoutes);
+app.use("/api/v1/matching", matchingRoutes);
 
 // Error handler
 app.use(errorHandler);
 
 app.listen(env.port, () => {
   logger.info(`Server is running on port ${env.port}`);
-  logger.info('Press Ctrl+C to stop the server');
+  logger.info("Press Ctrl+C to stop the server");
 });

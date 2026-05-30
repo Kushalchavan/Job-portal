@@ -3,17 +3,16 @@ import { eventEmitter } from "../events/eventEmitter";
 import { EVENTS } from "../events/events.contants";
 import { extractTextFromPDF } from "../utils/pdf";
 import { extractSkills } from "../utils/extractSkills";
-
 import {
   extractResumeSkills,
   parseResume,
 } from "../modules/ai/resume-parser.service";
+import { matchResumeAgainstJobs } from "../modules/matching/matching.engine";
 
 eventEmitter.on(EVENTS.RESUME_UPLOADED_EVENT, async (payload) => {
   try {
     console.log("Resume uploaded event received:", payload);
 
-    // Mark as processing
     await prisma.resume.update({
       where: {
         id: payload.resumeId,
@@ -23,19 +22,38 @@ eventEmitter.on(EVENTS.RESUME_UPLOADED_EVENT, async (payload) => {
       },
     });
 
-    // Extract text from PDF
+    // Extract PDF text
     const extractedText = await extractTextFromPDF(payload.storageKey);
-    console.log("Extracted Text Length:", extractedText.length);
-    console.log("Extracted Text (First 500 Characters):", extractedText.substring(0, 500));
 
-    // Deterministic skill extraction
+    console.log("Extracted Text Length:", extractedText.length);
+
+    console.log(
+      "Extracted Text (First 500 Characters):",
+      extractedText.substring(0, 500),
+    );
+
+    // Deterministic extraction (always works)
     const deterministicSkills = extractSkills(extractedText);
 
+    let aiSkills: string[] = [];
+    let parsedResume = null;
+
     // AI skill extraction
-    const aiSkills = await extractResumeSkills(extractedText);
+    try {
+      aiSkills = await extractResumeSkills(extractedText);
+    } catch (error) {
+      console.error("AI skill extraction failed:", error);
+    }
 
     // AI resume parsing
-    const parsedResume = await parseResume(extractedText);
+    try {
+      parsedResume = await parseResume(extractedText);
+    } catch (error) {
+      console.error("Resume parsing failed:", error);
+    }
+
+    // Fallback to deterministic skills
+    const skillsToMatch = aiSkills.length > 0 ? aiSkills : deterministicSkills;
 
     console.log("=================================");
     console.log("Deterministic Skills:");
@@ -46,11 +64,17 @@ eventEmitter.on(EVENTS.RESUME_UPLOADED_EVENT, async (payload) => {
     console.log(aiSkills);
 
     console.log("=================================");
+    console.log("Skills Used For Matching:");
+    console.log(skillsToMatch);
+
+    console.log("=================================");
     console.log("Parsed Resume:");
     console.log(parsedResume);
 
-    // For now save only deterministic data
-    // We will save AI output after validation
+    // Run matching engine
+    await matchResumeAgainstJobs(payload.resumeId, skillsToMatch);
+
+    // Save resume
     await prisma.resume.update({
       where: {
         id: payload.resumeId,
