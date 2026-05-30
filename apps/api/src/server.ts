@@ -11,7 +11,7 @@ import logger from "./config/logger";
 import "./listeners/notification.listener";
 import notificationRoutes from "./routes/notification.routes";
 import resumeRoutes from "./modules/resumes/resume.route";
-import './listeners/resume.listener'
+import './listeners/resume.listener';import "./listeners/job.listener";
 
 const app = express();
 

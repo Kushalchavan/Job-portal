@@ -1,6 +1,8 @@
 import { prisma } from "../config/prisma";
 import { CreateJobInput, UpdateJobInput } from "../types/job.types";
 import { AppError } from "../utils/AppError";
+import { EVENTS } from "../events/events.contants";
+import { eventEmitter } from "../events/eventEmitter";
 
 export const createJobs = async (data: CreateJobInput, userId: number) => {
   // check if company already exists
@@ -26,6 +28,10 @@ export const createJobs = async (data: CreateJobInput, userId: number) => {
       ...data,
       createdById: userId,
     },
+  });
+
+  eventEmitter.emit(EVENTS.JOB_CREATED_EVENT, {
+    jobId: job.id,
   });
 
   return job;
@@ -67,7 +73,7 @@ export const getJobs = async () => {
     },
     include: {
       company: true,
-    }
+    },
   });
 
   return jobs;

@@ -1,7 +1,6 @@
-import { RESUME_UPLOADED_EVENT } from "./resume.events";
-
 export const EVENTS = {
   APPLICATION_CREATED: "APPLICATION_CREATED",
   JOB_ALERT_CREATED: "JOB_ALERT_CREATED",
   RESUME_UPLOADED_EVENT: "resume.uploaded",
+  JOB_CREATED_EVENT: "job.created",
 };

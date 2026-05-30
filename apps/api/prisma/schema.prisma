@@ -58,6 +58,9 @@ model Job {
   applications   Application[]
   company        Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
   createdBy      User           @relation(fields: [createdById], references: [id])
+  resumeMatches  ResumeMatch[]
+
+  requiredSkills String[] @default([])
 
   @@index([title])
   @@index([location])
@@ -94,7 +97,7 @@ model Notification {
 }
 
 model Resume {
-  id            String       @id @default(cuid())
+  id            String        @id @default(cuid())
   userId        Int
   originalName  String
   storageKey    String
@@ -102,14 +105,37 @@ model Resume {
   skills        String[]
   parseData     Json?
   size          Int
-  status        ResumeStatus @default(PENDING)
+  status        ResumeStatus  @default(PENDING)
   extractedText String?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resumeMatches ResumeMatch[]
 
   @@index([userId])
   @@index([status])
+}
+
+model ResumeMatch {
+  id String @id @default(cuid())
+
+  resumeId String
+  jobId    Int
+
+  score Int
+
+  matchedSkills String[]
+  missingSkills String[]
+
+  summary String
+
+  createdAt DateTime @default(now())
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  job    Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId])
+  @@index([jobId])
 }
 
 enum Role {
