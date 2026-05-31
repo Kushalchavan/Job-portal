@@ -1,7 +1,10 @@
 import { Request, Response } from "express";
-import { prisma } from "../config/prisma";
-import { AppError } from "../utils/AppError";
-import { asyncHandler } from "../utils/asyncHandler";
+import { AppError } from "../../utils/AppError";
+import { asyncHandler } from "../../utils/asyncHandler";
+import {
+  getUserNotifications,
+  readUserNotification,
+} from "./notification.service";
 
 export const getNotifications = asyncHandler(
   async (req: Request, res: Response) => {
@@ -11,10 +14,7 @@ export const getNotifications = asyncHandler(
       throw new AppError("Unauthorized", 401);
     }
 
-    const notifications = await prisma.notification.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
-    });
+    const notifications = await getUserNotifications(userId);
 
     res.json({
       success: true,
@@ -36,10 +36,7 @@ export const readNotification = asyncHandler(
       throw new AppError("Unauthorized", 401);
     }
 
-    const result = await prisma.notification.updateMany({
-      where: { id, userId },
-      data: { isRead: true },
-    });
+    const result = await readUserNotification(id, userId);
 
     if (result.count === 0) {
       throw new AppError("Notification not found", 404);

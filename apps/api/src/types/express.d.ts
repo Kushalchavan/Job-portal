@@ -1,4 +1,4 @@
-import { TokenPayload } from "../utils/jwt";
+import { Role } from "@prisma/client";
 
 declare global {
   namespace Express {
@@ -10,3 +10,5 @@ declare global {
     }
   }
 }
+
+export {};

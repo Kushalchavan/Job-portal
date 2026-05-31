@@ -9,7 +9,6 @@ import companyRoutes from "./routes/company.route";
 import applicationRoutes from "./routes/application.routes";
 import logger from "./config/logger";
 import "./listeners/notification.listener";
-import notificationRoutes from "./routes/notification.routes";
 import resumeRoutes from "./modules/resumes/resume.route";
 import "./listeners/resume.listener";
 import "./listeners/job.listener";
@@ -17,6 +16,7 @@ import "./listeners/matching.listener";
 import matchingRoutes from "./modules/matching/matching.route";
 import dashboardRoute from "./modules/dashboard/dashboard.route";
 import analyticsRoute from "./modules/analytics/analytics.route";
+import notificationRoutes from "./modules/notification/notification.route";
 
 const app = express();
 
