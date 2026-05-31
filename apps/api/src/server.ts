@@ -14,6 +14,8 @@ import resumeRoutes from "./modules/resumes/resume.route";
 import "./listeners/resume.listener";
 import "./listeners/job.listener";
 import matchingRoutes from "./modules/matching/matching.route";
+import dashboardRoute from "./modules/dashboard/dashboard.route";
+import analyticsRoute from "./modules/analytics/analytics.route";
 
 const app = express();
 
@@ -29,6 +31,8 @@ app.use("/api/v1/applications", applicationRoutes);
 app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/resumes", resumeRoutes);
 app.use("/api/v1/matching", matchingRoutes);
+app.use("/api/v1/dashboard", dashboardRoute);
+app.use("/api/v1/analytics", analyticsRoute);
 
 // Error handler
 app.use(errorHandler);
