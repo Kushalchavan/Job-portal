@@ -1,8 +1,13 @@
+import { emitCandidateStatusUpdated } from "../../events/matching.event";
 import {
+  getCandidatesByStatus,
   getMatchesByJobId,
   getMatchesByResumeId,
+  getPipelineByJobId,
   getTopCandidatesByJobId,
+  updateMatchStatus,
 } from "./matching.repository";
+import { CandidateStatus } from "@prisma/client";
 
 export interface MatchResult {
   score: number;
@@ -75,4 +80,60 @@ export const getResumeMatches = async (resumeId: string) => {
     matchedSkills: match.matchedSkills,
     missingSkills: match.missingSkills,
   }));
+};
+
+export const changeMatchStatus = async (
+  matchId: string,
+  status: CandidateStatus,
+) => {
+  const updatedMatch = await updateMatchStatus(matchId, status);
+
+  emitCandidateStatusUpdated(matchId, status);
+
+  return updatedMatch;
+};
+
+export const getCandidatesByPipeline = async (
+  jobId: number,
+  status: CandidateStatus,
+) => {
+  return getCandidatesByStatus(jobId, status);
+};
+
+export const getCandidatePipeline = async (jobId: number) => {
+  const pipeline = await getPipelineByJobId(jobId);
+
+  const result = {
+    matched: 0,
+    shortlisted: 0,
+    interview: 0,
+    hired: 0,
+    rejected: 0,
+  };
+
+  for (const item of pipeline) {
+    switch (item.status) {
+      case "MATCHED":
+        result.matched = item._count.status;
+        break;
+
+      case "SHORTLISTED":
+        result.shortlisted = item._count.status;
+        break;
+
+      case "INTERVIEW":
+        result.interview = item._count.status;
+        break;
+
+      case "HIRED":
+        result.hired = item._count.status;
+        break;
+
+      case "REJECTED":
+        result.rejected = item._count.status;
+        break;
+    }
+  }
+
+  return result;
 };

@@ -3,4 +3,5 @@ export const EVENTS = {
   JOB_ALERT_CREATED: "JOB_ALERT_CREATED",
   RESUME_UPLOADED_EVENT: "resume.uploaded",
   JOB_CREATED_EVENT: "job.created",
+  CANDIDATE_STATUS_UPDATED: "candidate.status.updated",
 };

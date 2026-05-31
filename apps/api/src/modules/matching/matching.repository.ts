@@ -1,4 +1,5 @@
 import { prisma } from "../../config/prisma";
+import { CandidateStatus } from "@prisma/client";
 
 export const getActiveJobs = async () => {
   return prisma.job.findMany({
@@ -78,6 +79,68 @@ export const getMatchesByResumeId = async (resumeId: string) => {
     },
     orderBy: {
       score: "desc",
+    },
+  });
+};
+
+export const updateMatchStatus = async (
+  matchId: string,
+  status: CandidateStatus,
+) => {
+  return prisma.resumeMatch.update({
+    where: {
+      id: matchId,
+    },
+    data: {
+      status,
+    },
+  });
+};
+
+export const getCandidatesByStatus = async (
+  jobId: number,
+  status: CandidateStatus,
+) => {
+  return prisma.resumeMatch.findMany({
+    where: {
+      jobId,
+      status,
+    },
+    include: {
+      resume: {
+        select: {
+          id: true,
+          originalName: true,
+          skills: true,
+        },
+      },
+    },
+    orderBy: {
+      score: "desc",
+    },
+  });
+};
+
+export const getMatchById = async (matchId: string) => {
+  return prisma.resumeMatch.findUnique({
+    where: {
+      id: matchId,
+    },
+    include: {
+      resume: true,
+      job: true,
+    },
+  });
+};
+
+export const getPipelineByJobId = async (jobId: number) => {
+  return prisma.resumeMatch.groupBy({
+    by: ["status"],
+    where: {
+      jobId,
+    },
+    _count: {
+      status: true,
     },
   });
 };
