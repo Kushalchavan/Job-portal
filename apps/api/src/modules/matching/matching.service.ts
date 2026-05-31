@@ -1,4 +1,8 @@
-import { getMatchesByJobId } from "./matching.repository";
+import {
+  getMatchesByJobId,
+  getMatchesByResumeId,
+  getTopCandidatesByJobId,
+} from "./matching.repository";
 
 export interface MatchResult {
   score: number;
@@ -46,4 +50,29 @@ export const calculateMatchScore = (
 
 export const getJobMatches = async (jobId: number) => {
   return getMatchesByJobId(jobId);
+};
+
+export const getTopCandidates = async (jobId: number) => {
+  const matches = await getTopCandidatesByJobId(jobId);
+
+  return matches.map((match) => ({
+    resumeName: match.resume.originalName,
+    score: match.score,
+    matchedSkills: match.matchedSkills,
+    missingSkills: match.missingSkills,
+  }));
+};
+
+export const getResumeMatches = async (resumeId: string) => {
+  const matches = await getMatchesByResumeId(resumeId);
+
+  return matches.map((match) => ({
+    jobId: match.job.id,
+    jobTitle: match.job.title,
+    location: match.job.location,
+    employmentType: match.job.employmentType,
+    score: match.score,
+    matchedSkills: match.matchedSkills,
+    missingSkills: match.missingSkills,
+  }));
 };

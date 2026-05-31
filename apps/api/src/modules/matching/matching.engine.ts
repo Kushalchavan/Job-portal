@@ -25,13 +25,21 @@ export const matchResumeAgainstJobs = async (
       continue;
     }
 
+    const summary = `
+Matched ${matchResult.matchedSkills.length} skills:
+${matchResult.matchedSkills.join(", ")}
+
+Missing:
+${matchResult.missingSkills.join(", ")}
+`;
+
     const savedMatch = await createResumeMatch({
       resumeId,
       jobId: job.id,
       score: matchResult.score,
       matchedSkills: matchResult.matchedSkills,
       missingSkills: matchResult.missingSkills,
-      summary: "",
+      summary,
     });
 
     console.log("=================================");
