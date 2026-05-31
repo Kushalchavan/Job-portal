@@ -1,20 +1,17 @@
-import express from "express";
+import Router from "express";
+import { verifyJWT } from "../../middlewares/auth.middleware";
+import { requireRole } from "../../middlewares/role.middleware";
+import { validate } from "../../middlewares/validation.middleware";
 import {
   createCompanyController,
   deleteCompanyController,
   getAllCompaniesController,
   getCompanyByIdController,
   updateCompanyController,
-} from "../controller/company.controller";
-import { verifyJWT } from "../middlewares/auth.middleware";
-import { requireRole } from "../middlewares/role.middleware";
-import { validate } from "../middlewares/validation.middleware";
-import {
-  createCompanySchema,
-  updateCompanySchema,
-} from "../validations/company.validation";
+} from "./company.controller";
+import { createCompanySchema, updateCompanySchema } from "./company.schema";
 
-const router = express.Router();
+const router = Router();
 
 router.post(
   "/",
@@ -36,7 +33,7 @@ router.get(
   requireRole("RECRUITER"),
   getAllCompaniesController,
 );
-router.get("/:id", verifyJWT,getCompanyByIdController);
+router.get("/:id", verifyJWT, getCompanyByIdController);
 router.delete(
   "/:id",
   verifyJWT,

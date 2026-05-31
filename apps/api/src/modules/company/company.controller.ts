@@ -1,19 +1,21 @@
+import { Request, Response } from "express";
+import { AppError } from "../../utils/AppError";
+import { asyncHandler } from "../../utils/asyncHandler";
+
 import {
   createCompany,
   deleteCompany,
   getAllCompanies,
   getCompanyById,
   updateCompany,
-} from "../service/company.service";
-import { AppError } from "../utils/AppError";
-import { asyncHandler } from "../utils/asyncHandler";
-import { Request, Response } from "express";
+} from "./company.service";
 
 export const createCompanyController = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) {
       throw new AppError("Unauthorized", 401);
     }
+
     const company = await createCompany(req.body, req.user.id);
 
     res.status(201).json({
@@ -31,9 +33,13 @@ export const updateCompanyController = asyncHandler(
     }
 
     const updatedCompany = await updateCompany(
-      { ...req.body, id: Number(req.params.id) },
+      {
+        ...req.body,
+        id: Number(req.params.id),
+      },
       req.user.id,
     );
+
     res.status(200).json({
       success: true,
       message: "Company updated successfully",

@@ -5,7 +5,6 @@ import { env } from "./config/env";
 import cors from "cors";
 import authRoutes from "./routes/auth.routes";
 import jobRoutes from "./routes/job.routes";
-import companyRoutes from "./routes/company.route";
 import applicationRoutes from "./routes/application.routes";
 import logger from "./config/logger";
 import "./listeners/notification.listener";
@@ -17,6 +16,7 @@ import matchingRoutes from "./modules/matching/matching.route";
 import dashboardRoute from "./modules/dashboard/dashboard.route";
 import analyticsRoute from "./modules/analytics/analytics.route";
 import notificationRoutes from "./modules/notification/notification.route";
+import companyRoutes from "./modules/company/company.route";
 
 const app = express();
 
