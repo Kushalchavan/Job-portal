@@ -1,23 +1,17 @@
-import express from "express";
+import { Router } from "express";
+import { verifyJWT } from "../../middlewares/auth.middleware";
+import { requireRole } from "../../middlewares/role.middleware";
+import { validate } from "../../middlewares/validation.middleware";
 import {
   createJobController,
   deleteJobController,
   getJobByIdController,
   getJobsController,
   updateJobController,
-} from "../controller/job.controller";
-import { verifyJWT } from "../middlewares/auth.middleware";
-import { validate } from "../middlewares/validation.middleware";
-import {
-  createJobSchema,
-  updateJobSchema,
-} from "../validations/job.validation";
-import { requireRole } from "../middlewares/role.middleware";
+} from "./job.controller";
+import { createJobSchema, updateJobSchema } from "@repo/schemas";
 
-const router = express.Router();
-
-router.get("/", getJobsController);
-router.get("/:id", getJobByIdController);
+const router = Router();
 
 router.post(
   "/",
@@ -26,6 +20,7 @@ router.post(
   validate(createJobSchema),
   createJobController,
 );
+
 router.put(
   "/:id",
   verifyJWT,
@@ -33,6 +28,11 @@ router.put(
   validate(updateJobSchema),
   updateJobController,
 );
+
+router.get("/", getJobsController);
+
+router.get("/:id", getJobByIdController);
+
 router.delete("/:id", verifyJWT, requireRole("RECRUITER"), deleteJobController);
 
 export default router;

@@ -4,7 +4,6 @@ import morgan from "morgan";
 import { env } from "./config/env";
 import cors from "cors";
 import authRoutes from "./routes/auth.routes";
-import jobRoutes from "./routes/job.routes";
 import applicationRoutes from "./routes/application.routes";
 import logger from "./config/logger";
 import "./listeners/notification.listener";
@@ -17,6 +16,7 @@ import dashboardRoute from "./modules/dashboard/dashboard.route";
 import analyticsRoute from "./modules/analytics/analytics.route";
 import notificationRoutes from "./modules/notification/notification.route";
 import companyRoutes from "./modules/company/company.route";
+import jobRoutes from "./modules/job/job.route";
 
 const app = express();
 

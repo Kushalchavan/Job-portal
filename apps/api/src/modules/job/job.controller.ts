@@ -1,20 +1,24 @@
 import { Request, Response } from "express";
-import { asyncHandler } from "../utils/asyncHandler";
+import { asyncHandler } from "../../utils/asyncHandler";
+import { AppError } from "../../utils/AppError";
 import {
   createJobs,
   deleteJobs,
   getJobById,
   getJobs,
   updateJob,
-} from "../service/job.service";
-import { AppError } from "../utils/AppError";
+} from "./job.service";
 
 export const createJobController = asyncHandler(
   async (req: Request, res: Response) => {
     if (!req.user) {
       throw new AppError("Unauthorized", 401);
     }
-    const job = await createJobs(req.body, req.user.id);
+
+    const job = await createJobs(
+      req.body,
+      req.user.id,
+    );
 
     res.status(201).json({
       success: true,
@@ -31,7 +35,10 @@ export const updateJobController = asyncHandler(
     }
 
     const updatedJob = await updateJob(
-      { ...req.body, id: Number(req.params.id) },
+      {
+        ...req.body,
+        id: Number(req.params.id),
+      },
       req.user.id,
     );
 
@@ -44,7 +51,7 @@ export const updateJobController = asyncHandler(
 );
 
 export const getJobsController = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (_req: Request, res: Response) => {
     const jobs = await getJobs();
 
     res.status(200).json({
@@ -56,8 +63,9 @@ export const getJobsController = asyncHandler(
 
 export const getJobByIdController = asyncHandler(
   async (req: Request, res: Response) => {
-    const jobId = Number(req.params.id);
-    const job = await getJobById(jobId);
+    const job = await getJobById(
+      Number(req.params.id),
+    );
 
     res.status(200).json({
       success: true,
@@ -71,13 +79,16 @@ export const deleteJobController = asyncHandler(
     if (!req.user) {
       throw new AppError("Unauthorized", 401);
     }
-    const jobId = Number(req.params.id);
-    const deleteJob = await deleteJobs(jobId, req.user.id);
 
-    res.status(201).json({
+    const deletedJob = await deleteJobs(
+      Number(req.params.id),
+      req.user.id,
+    );
+
+    res.status(200).json({
       success: true,
-      messsage: "Job Deleted Successfully",
-      data: deleteJob,
+      message: "Job Deleted Successfully",
+      data: deletedJob,
     });
   },
 );

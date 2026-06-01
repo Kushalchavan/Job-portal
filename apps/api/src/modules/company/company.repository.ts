@@ -1,8 +1,5 @@
 import { prisma } from "../../config/prisma";
-import {
-  CreateCompanyInput,
-  UpdateCompanyInput,
-} from "../../types/company.types";
+import { CreateCompanyInput, UpdateCompanyInput } from "./company.types";
 
 export const createCompanyRepository = async (
   data: CreateCompanyInput,
