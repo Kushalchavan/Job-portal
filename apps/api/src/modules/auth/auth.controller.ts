@@ -1,12 +1,7 @@
 import { Request, Response } from "express";
-import { asyncHandler } from "../utils/asyncHandler";
-import {
-  getCurrentUser,
-  loginUser,
-  registerUser,
-} from "../service/auth.service";
-import { AppError } from "../utils/AppError";
-
+import { asyncHandler } from "../../utils/asyncHandler";
+import { getCurrentUser, loginUser, registerUser } from "./auth.service";
+import { AppError } from "../../utils/AppError";
 
 // REGISTER
 export const registerController = asyncHandler(
@@ -18,11 +13,10 @@ export const registerController = asyncHandler(
     res.status(201).json({
       success: true,
       message: "User registered successfully",
-      data, 
+      data,
     });
   },
 );
-
 
 // LOGIN
 export const loginController = asyncHandler(
@@ -34,7 +28,7 @@ export const loginController = asyncHandler(
     res.status(200).json({
       success: true,
       message: "User logged in successfully",
-      data, 
+      data,
     });
   },
 );
