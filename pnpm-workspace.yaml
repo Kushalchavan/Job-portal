@@ -7,6 +7,7 @@ allowBuilds:
   '@prisma/engines': false
   bcrypt: false
   esbuild: false
+  msgpackr-extract: true
   msw: false
   prisma: false
   protobufjs: false

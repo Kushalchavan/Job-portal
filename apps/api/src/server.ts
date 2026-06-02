@@ -17,6 +17,7 @@ import companyRoutes from "./modules/company/company.route";
 import jobRoutes from "./modules/job/job.route";
 import applicationRoutes from "./modules/application/application.route";
 import authRoutes from "./modules/auth/auth.route";
+import "./workers/notification.worker";
 
 const app = express();
 
