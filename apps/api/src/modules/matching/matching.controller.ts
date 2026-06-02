@@ -9,6 +9,7 @@ import {
   getTopCandidates,
 } from "./matching.service";
 import { CandidateStatus } from "@prisma/client";
+import { updateMatchStatusSchema } from "./matching.validation";
 
 export const getJobMatchesController = asyncHandler(
   async (req: Request, res: Response) => {
@@ -56,9 +57,7 @@ export const updateMatchStatusController = asyncHandler(
   async (req: Request, res: Response) => {
     const matchId = req.params.matchId;
 
-    const { status } = req.body as {
-      status: CandidateStatus;
-    };
+    const { status } = updateMatchStatusSchema.parse(req.body);
 
     const updatedMatch = await changeMatchStatus(matchId, status);
 

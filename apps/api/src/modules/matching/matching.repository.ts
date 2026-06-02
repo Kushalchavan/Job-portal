@@ -39,6 +39,7 @@ export const getMatchesByJobId = async (jobId: number) => {
     orderBy: {
       score: "desc",
     },
+    take: 5
   });
 };
 
