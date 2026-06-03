@@ -62,7 +62,41 @@ export const updateApplicationStatus = async (
     throw new AppError("Application not found", 404);
   }
 
-  return updateApplicationStatusRepo(applicationId, status);
+  const updatedApplication = await updateApplicationStatusRepo(
+    applicationId,
+    status,
+  );
+
+  let message = "";
+
+  switch (status) {
+    case "SHORTLISTED":
+      message = `Your application for ${application.job.title} has been shortlisted.`;
+      break;
+
+    case "REJECTED":
+      message = `Your application for ${application.job.title} has been rejected.`;
+      break;
+
+    case "HIRED":
+      message = `Congratulations! You have been hired for ${application.job.title}.`;
+      break;
+
+    case "REVIEWED":
+      message = `Your application for ${application.job.title} is under review.`;
+      break;
+
+    default:
+      message = `Your application status has been updated.`;
+  }
+
+  await notificationQueue.add(EVENTS.APPLICATION_STATUS_UPDATED, {
+    userId: application.userId,
+    type: "JOB_ALERT",
+    message,
+  });
+
+  return updatedApplication;
 };
 
 export const withdrawApplication = async (

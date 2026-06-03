@@ -3,6 +3,7 @@ import { asyncHandler } from "../../utils/asyncHandler";
 import {
   changeMatchStatus,
   getCandidatePipeline,
+  getCandidateProfileData,
   getCandidatesByPipeline,
   getJobMatches,
   getResumeMatches,
@@ -96,3 +97,24 @@ export const getCandidatePipelineController = asyncHandler(
     });
   },
 );
+
+export const getCandidateProfileController =
+  asyncHandler(
+    async (
+      req: Request,
+      res: Response,
+    ) => {
+      const resumeId =
+        req.params.resumeId;
+
+      const candidate =
+        await getCandidateProfileData(
+          resumeId,
+        );
+
+      res.status(200).json({
+        success: true,
+        data: candidate,
+      });
+    },
+  );

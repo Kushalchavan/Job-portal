@@ -6,6 +6,7 @@ import {
   getResumeMatchesController,
   getTopCandidatesController,
   updateMatchStatusController,
+  getCandidateProfileController,
 } from "./matching.controller";
 
 const router = Router();
@@ -16,5 +17,6 @@ router.get("/resume/:resumeId/matches", getResumeMatchesController);
 router.patch("/:matchId/status", updateMatchStatusController);
 router.get("/:jobId/candidates", getCandidatesByStatusController);
 router.get("/:jobId/pipeline", getCandidatePipelineController);
+router.get("/candidate/:resumeId", getCandidateProfileController);
 
 export default router;

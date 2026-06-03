@@ -145,3 +145,27 @@ export const getPipelineByJobId = async (jobId: number) => {
     },
   });
 };
+
+export const getCandidateProfile = async (
+  resumeId: string,
+) => {
+  return prisma.resume.findUnique({
+    where: {
+      id: resumeId,
+    },
+    include: {
+      resumeMatches: {
+        include: {
+          job: {
+            select: {
+              id: true,
+              title: true,
+              location: true,
+              employmentType: true,
+            },
+          },
+        },
+      },
+    },
+  });
+};

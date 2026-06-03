@@ -77,6 +77,10 @@ export const findApplicationById = async (
     where: {
       id: applicationId,
     },
+    include: {
+      user: true,
+      job: true,
+    },
   });
 };
 

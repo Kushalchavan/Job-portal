@@ -1,5 +1,7 @@
 import { emitCandidateStatusUpdated } from "../../events/matching.event";
+import { AppError } from "../../utils/AppError";
 import {
+  getCandidateProfile,
   getCandidatesByStatus,
   getMatchesByJobId,
   getMatchesByResumeId,
@@ -136,4 +138,20 @@ export const getCandidatePipeline = async (jobId: number) => {
   }
 
   return result;
+};
+
+export const getCandidateProfileData = async (
+  resumeId: string,
+) => {
+  const candidate =
+    await getCandidateProfile(resumeId);
+
+  if (!candidate) {
+    throw new AppError(
+      "Candidate not found",
+      404,
+    );
+  }
+
+  return candidate;
 };
