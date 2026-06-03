@@ -1,4 +1,5 @@
 import { prisma } from "../../config/prisma";
+import { EmploymentType, Level } from "@prisma/client";
 
 export const findCompanyById = async (companyId: number) => {
   return prisma.company.findUnique({
@@ -8,10 +9,7 @@ export const findCompanyById = async (companyId: number) => {
   });
 };
 
-export const createJobRepo = async (
-  data: any,
-  userId: number,
-) => {
+export const createJobRepo = async (data: any, userId: number) => {
   return prisma.job.create({
     data: {
       ...data,
@@ -43,13 +41,51 @@ export const updateJobRepo = async (
 export const getJobsRepo = async (
   page: number,
   limit: number,
+  search?: string,
+  location?: string,
+  level?: Level,
+  employmentType?: EmploymentType,
 ) => {
+  const where = {
+    isActive: true,
+    deletedAt: null,
+
+    ...(search && {
+      OR: [
+        {
+          title: {
+            contains: search,
+            mode: "insensitive" as const,
+          },
+        },
+        {
+          description: {
+            contains: search,
+            mode: "insensitive" as const,
+          },
+        },
+      ],
+    }),
+
+    ...(location && {
+      location: {
+        contains: location,
+        mode: "insensitive" as const,
+      },
+    }),
+
+    ...(level && {
+      level,
+    }),
+
+    ...(employmentType && {
+      employmentType,
+    }),
+  };
+
   const [jobs, total] = await Promise.all([
     prisma.job.findMany({
-      where: {
-        isActive: true,
-        deletedAt: null,
-      },
+      where,
       include: {
         company: true,
       },
@@ -61,10 +97,7 @@ export const getJobsRepo = async (
     }),
 
     prisma.job.count({
-      where: {
-        isActive: true,
-        deletedAt: null,
-      },
+      where,
     }),
   ]);
 

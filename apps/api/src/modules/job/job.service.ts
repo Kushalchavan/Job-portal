@@ -10,11 +10,9 @@ import {
   softDeleteJobRepo,
   updateJobRepo,
 } from "./job.repository";
+import { EmploymentType, Level } from "@prisma/client/wasm";
 
-export const createJobs = async (
-  data: any,
-  userId: number,
-) => {
+export const createJobs = async (data: any, userId: number) => {
   const company = await findCompanyById(data.companyId);
 
   if (!company) {
@@ -37,10 +35,7 @@ export const createJobs = async (
   return job;
 };
 
-export const updateJob = async (
-  data: any,
-  userId: number,
-) => {
+export const updateJob = async (data: any, userId: number) => {
   const job = await findJobById(data.id);
 
   if (!job) {
@@ -48,18 +43,13 @@ export const updateJob = async (
   }
 
   if (job.createdById !== userId) {
-    throw new AppError(
-      "You are not allowed to update this job",
-      403,
-    );
+    throw new AppError("You are not allowed to update this job", 403);
   }
 
   const { id, ...rest } = data;
 
   const updatedData = Object.fromEntries(
-    Object.entries(rest).filter(
-      ([_, value]) => value !== undefined,
-    ),
+    Object.entries(rest).filter(([_, value]) => value !== undefined),
   );
 
   return updateJobRepo(id, updatedData);
@@ -68,10 +58,18 @@ export const updateJob = async (
 export const getJobs = async (
   page: number,
   limit: number,
+  search?: string,
+  location?: string,
+  level?: Level,
+  employmentType?: EmploymentType,
 ) => {
   const { jobs, total } = await getJobsRepo(
     page,
     limit,
+    search,
+    location,
+    level,
+    employmentType,
   );
 
   return {
@@ -87,19 +85,13 @@ export const getJobById = async (jobId: number) => {
   const job = await getJobDetailsRepo(jobId);
 
   if (!job) {
-    throw new AppError(
-      "The Job you are looking for does not exist",
-      404,
-    );
+    throw new AppError("The Job you are looking for does not exist", 404);
   }
 
   return job;
 };
 
-export const deleteJobs = async (
-  jobId: number,
-  userId: number,
-) => {
+export const deleteJobs = async (jobId: number, userId: number) => {
   const job = await findJobById(jobId);
 
   if (!job) {
@@ -107,10 +99,7 @@ export const deleteJobs = async (
   }
 
   if (job.createdById !== userId) {
-    throw new AppError(
-      "You are not allowed to delete this job",
-      403,
-    );
+    throw new AppError("You are not allowed to delete this job", 403);
   }
 
   return softDeleteJobRepo(jobId);
