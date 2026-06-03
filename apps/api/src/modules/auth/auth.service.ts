@@ -2,11 +2,7 @@ import bcrypt from "bcrypt";
 import { AppError } from "../../utils/AppError";
 import { signToken } from "../../utils/jwt";
 
-import {
-  createUser,
-  findUserByEmail,
-  findUserById,
-} from "./auth.repository";
+import { createUser, findUserByEmail, findUserById } from "./auth.repository";
 
 export const registerUser = async (
   name: string,
@@ -45,20 +41,18 @@ export const registerUser = async (
   };
 };
 
-export const loginUser = async (
-  email: string,
-  password: string,
-) => {
+export const loginUser = async (email: string, password: string) => {
   const user = await findUserByEmail(email);
 
   if (!user) {
     throw new AppError("Email does not exist", 401);
   }
 
-  const matchUser = await bcrypt.compare(
-    password,
-    user.password,
-  );
+  if (!user?.isActive) {
+    throw new AppError("Your account has been blocked", 403);
+  }
+
+  const matchUser = await bcrypt.compare(password, user.password);
 
   if (!matchUser) {
     throw new AppError("Invalid Credentials", 401);
@@ -80,9 +74,7 @@ export const loginUser = async (
   };
 };
 
-export const getCurrentUser = async (
-  userId: number,
-) => {
+export const getCurrentUser = async (userId: number) => {
   const user = await findUserById(userId);
 
   if (!user) {

@@ -1,8 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "../utils/AppError";
 import { verifyToken } from "../utils/jwt";
+import { findUserById } from "../modules/auth/auth.repository";
 
-export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
+export const verifyJWT = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -10,23 +15,31 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
   }
 
   const token = authHeader.split(" ")[1];
+
   if (!token) {
     throw new AppError("Unauthorized", 401);
   }
 
   try {
     const decoded = verifyToken(token);
-    if (!decoded.id) {
-      throw new AppError("Invalid token payload", 401);
+
+    const user = await findUserById(decoded.id);
+
+    if (!user) {
+      throw new AppError("User not found", 401);
+    }
+
+    if (!user.isActive) {
+      throw new AppError("Account has been blocked", 403);
     }
 
     req.user = {
-      id: decoded.id,
-      role: decoded.role,
+      id: user.id,
+      role: user.role,
     };
 
     next();
-  } catch (error) {
+  } catch {
     throw new AppError("Invalid Token", 401);
   }
 };

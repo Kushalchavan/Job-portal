@@ -25,6 +25,7 @@ export const findUserById = async (userId: number) => {
       name: true,
       email: true,
       role: true,
+      isActive: true,
       createdAt: true,
     },
   });

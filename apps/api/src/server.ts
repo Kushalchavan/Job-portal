@@ -20,6 +20,7 @@ import jobRoutes from "./modules/job/job.route";
 import applicationRoutes from "./modules/application/application.route";
 import authRoutes from "./modules/auth/auth.route";
 import savedJobRoutes from "./modules/saved-job/saved-job.route";
+import adminRoutes from "./modules/admin/admin.route";
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use("/api/v1/matching", matchingRoutes);
 app.use("/api/v1/dashboard", dashboardRoute);
 app.use("/api/v1/analytics", analyticsRoute);
 app.use("/api/v1/saved-jobs", savedJobRoutes);
+app.use("/api/v1/admin", adminRoutes);
 
 // Error handler
 app.use(errorHandler);

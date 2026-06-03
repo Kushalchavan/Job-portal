@@ -13,8 +13,12 @@ model User {
   email         String         @unique
   password      String
   role          Role           @default(USER)
+
+  isActive     Boolean        @default(true)
+
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+
   savedJobs     SavedJob[]
   applications  Application[]
   companies     Company[]
