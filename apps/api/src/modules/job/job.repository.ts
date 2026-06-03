@@ -45,6 +45,9 @@ export const getJobsRepo = async (
   location?: string,
   level?: Level,
   employmentType?: EmploymentType,
+  minSalary?: number,
+  maxSalary?: number,
+  sort?: string,
 ) => {
   const where = {
     isActive: true,
@@ -81,7 +84,28 @@ export const getJobsRepo = async (
     ...(employmentType && {
       employmentType,
     }),
+
+    ...(minSalary && {
+      maxSalary: {
+        gte: minSalary,
+      },
+    }),
+
+    ...(maxSalary && {
+      minSalary: {
+        lte: maxSalary,
+      },
+    }),
   };
+
+  const orderBy =
+    sort === "oldest"
+      ? { createdAt: "asc" as const }
+      : sort === "maxSalary"
+        ? { maxSalary: "desc" as const }
+        : sort === "minSalary"
+          ? { minSalary: "desc" as const }
+          : { createdAt: "desc" as const };
 
   const [jobs, total] = await Promise.all([
     prisma.job.findMany({
@@ -91,9 +115,7 @@ export const getJobsRepo = async (
       },
       skip: (page - 1) * limit,
       take: limit,
-      orderBy: {
-        createdAt: "desc",
-      },
+      orderBy,
     }),
 
     prisma.job.count({

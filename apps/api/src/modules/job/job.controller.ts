@@ -62,6 +62,16 @@ export const getJobsController = asyncHandler(
 
     const employmentType = req.query.employmentType as EmploymentType;
 
+    const minSalary = req.query.minSalary
+      ? Number(req.query.minSalary)
+      : undefined;
+
+    const maxSalary = req.query.maxSalary
+      ? Number(req.query.maxSalary)
+      : undefined;
+
+    const sort = req.query.sort as string;
+
     const result = await getJobs(
       page,
       limit,
@@ -69,6 +79,9 @@ export const getJobsController = asyncHandler(
       location,
       level,
       employmentType,
+      minSalary,
+      maxSalary,
+      sort,
     );
 
     res.status(200).json({

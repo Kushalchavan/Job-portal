@@ -62,6 +62,9 @@ export const getJobs = async (
   location?: string,
   level?: Level,
   employmentType?: EmploymentType,
+  minSalary?: number,
+  maxSalary?: number,
+  sort?: string,
 ) => {
   const { jobs, total } = await getJobsRepo(
     page,
@@ -70,6 +73,9 @@ export const getJobs = async (
     location,
     level,
     employmentType,
+    minSalary,
+    maxSalary,
+    sort,
   );
 
   return {
