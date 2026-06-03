@@ -65,8 +65,22 @@ export const updateJob = async (
   return updateJobRepo(id, updatedData);
 };
 
-export const getJobs = async () => {
-  return getJobsRepo();
+export const getJobs = async (
+  page: number,
+  limit: number,
+) => {
+  const { jobs, total } = await getJobsRepo(
+    page,
+    limit,
+  );
+
+  return {
+    jobs,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  };
 };
 
 export const getJobById = async (jobId: number) => {

@@ -51,12 +51,21 @@ export const updateJobController = asyncHandler(
 );
 
 export const getJobsController = asyncHandler(
-  async (_req: Request, res: Response) => {
-    const jobs = await getJobs();
+  async (req: Request, res: Response) => {
+    const page =
+      Number(req.query.page) || 1;
+
+    const limit =
+      Number(req.query.limit) || 10;
+
+    const result = await getJobs(
+      page,
+      limit,
+    );
 
     res.status(200).json({
       success: true,
-      data: jobs,
+      ...result,
     });
   },
 );

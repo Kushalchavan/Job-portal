@@ -40,16 +40,38 @@ export const updateJobRepo = async (
   });
 };
 
-export const getJobsRepo = async () => {
-  return prisma.job.findMany({
-    where: {
-      isActive: true,
-      deletedAt: null,
-    },
-    include: {
-      company: true,
-    },
-  });
+export const getJobsRepo = async (
+  page: number,
+  limit: number,
+) => {
+  const [jobs, total] = await Promise.all([
+    prisma.job.findMany({
+      where: {
+        isActive: true,
+        deletedAt: null,
+      },
+      include: {
+        company: true,
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: {
+        createdAt: "desc",
+      },
+    }),
+
+    prisma.job.count({
+      where: {
+        isActive: true,
+        deletedAt: null,
+      },
+    }),
+  ]);
+
+  return {
+    jobs,
+    total,
+  };
 };
 
 export const getJobDetailsRepo = async (jobId: number) => {
