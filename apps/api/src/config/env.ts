@@ -10,6 +10,11 @@ const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
+  SMTP_HOST: z.string(),
+  SMTP_PORT: z.string(),
+  SMTP_USER: z.string(),
+  SMTP_PASS: z.string(),
+  SMTP_FROM: z.string(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
@@ -28,4 +33,9 @@ export const env = {
   isProduction: parsedEnv.data.NODE_ENV === "production",
   isDevelopment: parsedEnv.data.NODE_ENV === "development",
   isTest: parsedEnv.data.NODE_ENV === "test",
+  SMTP_HOST: parsedEnv.data.SMTP_HOST,
+  SMTP_PORT: parsedEnv.data.SMTP_PORT,
+  SMTP_USER: parsedEnv.data.SMTP_USER,
+  SMTP_PASS: parsedEnv.data.SMTP_PASS,
+  SMTP_FROM: parsedEnv.data.SMTP_FROM,
 };

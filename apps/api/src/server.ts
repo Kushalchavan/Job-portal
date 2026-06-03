@@ -9,6 +9,7 @@ import "./listeners/resume.listener";
 import "./listeners/job.listener";
 import "./listeners/matching.listener";
 import "./workers/notification.worker";
+import "./workers/email.worker";
 import resumeRoutes from "./modules/resumes/resume.route";
 import matchingRoutes from "./modules/matching/matching.route";
 import dashboardRoute from "./modules/dashboard/dashboard.route";
