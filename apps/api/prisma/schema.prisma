@@ -15,6 +15,7 @@ model User {
   role          Role           @default(USER)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  savedJobs     SavedJob[]
   applications  Application[]
   companies     Company[]
   jobs          Job[]
@@ -56,6 +57,7 @@ model Job {
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   requiredSkills String[]       @default([])
+  savedJobs      SavedJob[]
   applications   Application[]
   company        Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
   createdBy      User           @relation(fields: [createdById], references: [id])
@@ -124,14 +126,28 @@ model ResumeMatch {
   missingSkills String[]
   summary       String
 
-  status        CandidateStatus @default(MATCHED)
+  status CandidateStatus @default(MATCHED)
 
-  createdAt     DateTime @default(now())
+  createdAt DateTime @default(now())
 
-  job           Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  resume        Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  job    Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
 
   @@index([resumeId])
+  @@index([jobId])
+}
+
+model SavedJob {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  jobId     Int
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job  Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
+  @@index([userId])
   @@index([jobId])
 }
 

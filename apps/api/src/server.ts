@@ -5,10 +5,11 @@ import { env } from "./config/env";
 import cors from "cors";
 import logger from "./config/logger";
 import "./listeners/notification.listener";
-import resumeRoutes from "./modules/resumes/resume.route";
 import "./listeners/resume.listener";
 import "./listeners/job.listener";
 import "./listeners/matching.listener";
+import "./workers/notification.worker";
+import resumeRoutes from "./modules/resumes/resume.route";
 import matchingRoutes from "./modules/matching/matching.route";
 import dashboardRoute from "./modules/dashboard/dashboard.route";
 import analyticsRoute from "./modules/analytics/analytics.route";
@@ -17,7 +18,7 @@ import companyRoutes from "./modules/company/company.route";
 import jobRoutes from "./modules/job/job.route";
 import applicationRoutes from "./modules/application/application.route";
 import authRoutes from "./modules/auth/auth.route";
-import "./workers/notification.worker";
+import savedJobRoutes from "./modules/saved-job/saved-job.route";
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use("/api/v1/resumes", resumeRoutes);
 app.use("/api/v1/matching", matchingRoutes);
 app.use("/api/v1/dashboard", dashboardRoute);
 app.use("/api/v1/analytics", analyticsRoute);
+app.use("/api/v1/saved-jobs", savedJobRoutes);
 
 // Error handler
 app.use(errorHandler);
