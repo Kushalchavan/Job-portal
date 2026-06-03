@@ -4,12 +4,18 @@ import morgan from "morgan";
 import { env } from "./config/env";
 import cors from "cors";
 import logger from "./config/logger";
+import helmet from "helmet";
+import compression from "compression";
+
+// Import listeners and workers
 import "./listeners/notification.listener";
 import "./listeners/resume.listener";
 import "./listeners/job.listener";
 import "./listeners/matching.listener";
 import "./workers/notification.worker";
 import "./workers/email.worker";
+
+// Import routes here
 import resumeRoutes from "./modules/resumes/resume.route";
 import matchingRoutes from "./modules/matching/matching.route";
 import dashboardRoute from "./modules/dashboard/dashboard.route";
@@ -24,6 +30,9 @@ import adminRoutes from "./modules/admin/admin.route";
 
 const app = express();
 
+/// Middlewares
+app.use(helmet());
+app.use(compression());
 app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
@@ -44,6 +53,7 @@ app.use("/api/v1/admin", adminRoutes);
 // Error handler
 app.use(errorHandler);
 
+// Start the server
 app.listen(env.port, () => {
   logger.info(`Server is running on port ${env.port}`);
   logger.info("Press Ctrl+C to stop the server");
