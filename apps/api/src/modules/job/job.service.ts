@@ -10,7 +10,8 @@ import {
   softDeleteJobRepo,
   updateJobRepo,
 } from "./job.repository";
-import { EmploymentType, Level } from "@prisma/client/wasm";
+import { EmploymentType, Level } from "@prisma/client";
+import { clearJobsCache, getCache, setCache } from "../../utils/cache";
 
 export const createJobs = async (data: any, userId: number) => {
   const company = await findCompanyById(data.companyId);
@@ -27,6 +28,8 @@ export const createJobs = async (data: any, userId: number) => {
   }
 
   const job = await createJobRepo(data, userId);
+
+  await clearJobsCache();
 
   eventEmitter.emit(EVENTS.JOB_CREATED_EVENT, {
     jobId: job.id,
@@ -52,7 +55,10 @@ export const updateJob = async (data: any, userId: number) => {
     Object.entries(rest).filter(([_, value]) => value !== undefined),
   );
 
-  return updateJobRepo(id, updatedData);
+  const updatedJob = updateJobRepo(id, updatedData);
+  await clearJobsCache();
+
+  return updatedJob;
 };
 
 export const getJobs = async (
@@ -66,6 +72,23 @@ export const getJobs = async (
   maxSalary?: number,
   sort?: string,
 ) => {
+  const cacheKey = `jobs:${page}:${limit}:${search ?? ""}:${location ?? ""}:${level ?? ""}:${employmentType ?? ""}:${minSalary ?? ""}:${maxSalary ?? ""}:${sort ?? ""}`;
+
+  const cachedData = await getCache<{
+    jobs: any[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }>(cacheKey);
+
+  if (cachedData) {
+    console.log("🔥 Cache Hit");
+    return cachedData;
+  }
+
+  console.log("💾 Cache Miss");
+
   const { jobs, total } = await getJobsRepo(
     page,
     limit,
@@ -78,13 +101,17 @@ export const getJobs = async (
     sort,
   );
 
-  return {
+  const result = {
     jobs,
     total,
     page,
     limit,
     totalPages: Math.ceil(total / limit),
   };
+
+  await setCache(cacheKey, result, 60);
+
+  return result;
 };
 
 export const getJobById = async (jobId: number) => {
@@ -108,5 +135,8 @@ export const deleteJobs = async (jobId: number, userId: number) => {
     throw new AppError("You are not allowed to delete this job", 403);
   }
 
-  return softDeleteJobRepo(jobId);
+  const deletedJob = await softDeleteJobRepo(jobId);
+  await clearJobsCache();
+
+  return deletedJob;
 };
