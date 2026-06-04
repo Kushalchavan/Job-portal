@@ -1,5 +1,6 @@
 import express from "express";
 import { errorHandler } from "./middlewares/error.middleware";
+import { requestIdMiddleware } from "./middlewares/request-id.middleware";
 import morgan from "morgan";
 import { env } from "./config/env";
 import cors from "cors";
@@ -36,6 +37,7 @@ app.use(compression());
 app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
+app.use(requestIdMiddleware);
 
 // All routes here
 app.use("/api/v1/auth", authRoutes);
