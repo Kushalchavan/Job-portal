@@ -1,12 +1,18 @@
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import { AppError } from "../../utils/AppError";
 import {
+  createPasswordResetToken,
   createUser,
   deleteAllRefreshTokensByUserId,
+  deletePasswordResetToken,
+  deletePasswordResetTokensByUserId,
   deleteRefreshToken,
   findRefreshToken,
   findUserByEmail,
   findUserById,
+  findPasswordResetToken,
+  updatePassword,
 } from "./auth.repository";
 import {
   generateAccessToken,
@@ -14,7 +20,7 @@ import {
   verifyRefreshToken,
 } from "../../utils/jwt";
 import { createRefreshToken } from "./auth.repository";
-
+import { emailQueue } from "../../queues/email.queue";
 
 export const registerUser = async (
   name: string,
@@ -148,40 +154,94 @@ export const refreshAccessToken = async (refreshToken: string) => {
   }
 };
 
-export const logoutUser = async (
-  refreshToken: string,
-) => {
-  const existingToken =
-    await findRefreshToken(
-      refreshToken,
-    );
+export const logoutUser = async (refreshToken: string) => {
+  const existingToken = await findRefreshToken(refreshToken);
 
   if (!existingToken) {
-    throw new AppError(
-      "Refresh token not found",
-      404,
-    );
+    throw new AppError("Refresh token not found", 404);
   }
 
-  await deleteRefreshToken(
-    refreshToken,
-  );
+  await deleteRefreshToken(refreshToken);
 
   return {
-    message:
-      "Logged out successfully",
+    message: "Logged out successfully",
   };
 };
 
-export const logoutAllDevices = async (
-  userId: number,
-) => {
-  await deleteAllRefreshTokensByUserId(
-    userId,
-  );
+export const logoutAllDevices = async (userId: number) => {
+  await deleteAllRefreshTokensByUserId(userId);
+
+  return {
+    message: "Logged out from all devices",
+  };
+};
+
+export const forgotPassword = async (email: string) => {
+  const user = await findUserByEmail(email);
+
+  if (!user) {
+    return;
+  }
+
+  await deletePasswordResetTokensByUserId(user.id);
+
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+  await createPasswordResetToken(hashedToken, user.id, expiresAt);
+
+  const resetUrl = `http://localhost:3000/reset-password?token=${resetToken}`;
+
+  await emailQueue.add("SEND_EMAIL", {
+    to: user.email,
+    subject: "Reset Your Password",
+    html: `
+        <h2>Password Reset Request</h2>
+        <p>Click the link below to reset your password:</p>
+        <a href="${resetUrl}">
+          Reset Password
+        </a>
+
+        <p>This link expires in 15 minutes.</p>
+      `,
+  });
 
   return {
     message:
-      "Logged out from all devices",
+      "If an account exists with that email, a reset link has been sent.",
+  };
+};
+
+export const resetPassword = async (token: string, password: string) => {
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  const resetToken = await findPasswordResetToken(hashedToken);
+
+  if (!resetToken) {
+    throw new AppError("Invalid reset token", 400);
+  }
+
+  if (resetToken.expiresAt < new Date()) {
+    await deletePasswordResetToken(resetToken.id);
+
+    throw new AppError("Reset token has expired", 400);
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  await updatePassword(resetToken.userId, hashedPassword);
+
+  await deletePasswordResetToken(resetToken.id);
+
+  await deleteAllRefreshTokensByUserId(resetToken.userId);
+
+  return {
+    message: "Password reset successfully",
   };
 };

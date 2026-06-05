@@ -8,16 +8,17 @@ datasource db {
 }
 
 model User {
-  id            Int            @id @default(autoincrement())
-  name          String
-  email         String         @unique
-  password      String
-  role          Role           @default(USER)
+  id                  Int                  @id @default(autoincrement())
+  name                String
+  email               String               @unique
+  password            String
+  role                Role                 @default(USER)
+  passwordResetTokens PasswordResetToken[]
 
-  isActive     Boolean        @default(true)
+  isActive Boolean @default(true)
 
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   savedJobs     SavedJob[]
   applications  Application[]
@@ -159,6 +160,18 @@ model SavedJob {
 model RefreshToken {
   id        String   @id @default(cuid())
   token     String   @unique
+  userId    Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String
   userId    Int
   expiresAt DateTime
   createdAt DateTime @default(now())

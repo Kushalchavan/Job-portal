@@ -7,6 +7,8 @@ import {
   refreshAccessToken,
   logoutUser,
   logoutAllDevices,
+  forgotPassword,
+  resetPassword,
 } from "./auth.service";
 import { AppError } from "../../utils/AppError";
 
@@ -96,6 +98,33 @@ export const logoutAllController = asyncHandler(
     }
 
     const result = await logoutAllDevices(req.user.id);
+
+    res.status(200).json({
+      success: true,
+      ...result,
+    });
+  },
+);
+
+export const forgotPasswordController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { email } = req.body;
+
+    await forgotPassword(email);
+
+    res.status(200).json({
+      success: true,
+      message:
+        "If an account exists with that email, a reset link has been sent.",
+    });
+  },
+);
+
+export const resetPasswordController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { token, password } = req.body;
+
+    const result = await resetPassword(token, password);
 
     res.status(200).json({
       success: true,

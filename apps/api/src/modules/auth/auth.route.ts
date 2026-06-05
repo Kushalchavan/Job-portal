@@ -7,6 +7,8 @@ import {
   refreshTokenController,
   registerController,
   logoutAllController,
+  forgotPasswordController,
+  resetPasswordController,
 } from "./auth.controller";
 import { verifyJWT } from "../../middlewares/auth.middleware";
 import { loginSchema, registerSchema } from "../../validations/auth.validation";
@@ -24,6 +26,8 @@ router.post("/login", authRateLimiter, validate(loginSchema), loginController);
 router.post("/refresh", refreshTokenController);
 router.post("/logout", logoutController);
 router.post("/logout-all", logoutAllController);
+router.post("/forgot-password", forgotPasswordController);
+router.post("/reset-password", resetPasswordController);
 router.get("/me", verifyJWT, getMe);
 
 export default router;
