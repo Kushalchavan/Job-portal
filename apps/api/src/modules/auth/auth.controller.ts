@@ -1,6 +1,13 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../../utils/asyncHandler";
-import { getCurrentUser, loginUser, registerUser } from "./auth.service";
+import {
+  getCurrentUser,
+  loginUser,
+  registerUser,
+  refreshAccessToken,
+  logoutUser,
+  logoutAllDevices,
+} from "./auth.service";
 import { AppError } from "../../utils/AppError";
 
 // REGISTER
@@ -33,6 +40,24 @@ export const loginController = asyncHandler(
   },
 );
 
+export const refreshTokenController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      throw new AppError("Refresh token is required", 400);
+    }
+
+    const data = await refreshAccessToken(refreshToken);
+
+    res.status(200).json({
+      success: true,
+      message: "Access token refreshed successfully",
+      data,
+    });
+  },
+);
+
 // GET CURRENT USER
 export const getMe = asyncHandler(async (req: Request, res: Response) => {
   if (!req.user) {
@@ -46,3 +71,35 @@ export const getMe = asyncHandler(async (req: Request, res: Response) => {
     data: user,
   });
 });
+
+export const logoutController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const refreshToken = req.body?.refreshToken;
+
+    if (!refreshToken) {
+      throw new AppError("Refresh token is required", 400);
+    }
+
+    const result = await logoutUser(refreshToken);
+
+    res.status(200).json({
+      success: true,
+      ...result,
+    });
+  },
+);
+
+export const logoutAllController = asyncHandler(
+  async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new AppError("Unauthorized", 401);
+    }
+
+    const result = await logoutAllDevices(req.user.id);
+
+    res.status(200).json({
+      success: true,
+      ...result,
+    });
+  },
+);

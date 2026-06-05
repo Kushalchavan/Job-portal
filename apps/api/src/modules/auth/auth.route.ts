@@ -1,6 +1,13 @@
 import { Router } from "express";
 import { validate } from "../../middlewares/validation.middleware";
-import { getMe, loginController, registerController } from "./auth.controller";
+import {
+  getMe,
+  loginController,
+  logoutController,
+  refreshTokenController,
+  registerController,
+  logoutAllController,
+} from "./auth.controller";
 import { verifyJWT } from "../../middlewares/auth.middleware";
 import { loginSchema, registerSchema } from "../../validations/auth.validation";
 import { authRateLimiter } from "../../middlewares/rate-limit.middlware";
@@ -13,8 +20,10 @@ router.post(
   validate(registerSchema),
   registerController,
 );
-
 router.post("/login", authRateLimiter, validate(loginSchema), loginController);
+router.post("/refresh", refreshTokenController);
+router.post("/logout", logoutController);
+router.post("/logout-all", logoutAllController);
 router.get("/me", verifyJWT, getMe);
 
 export default router;

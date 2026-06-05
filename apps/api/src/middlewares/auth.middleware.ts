@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "../utils/AppError";
-import { verifyToken } from "../utils/jwt";
 import { findUserById } from "../modules/auth/auth.repository";
+import { verifyAccessToken } from "../utils/jwt";
 
 export const verifyJWT = async (
   req: Request,
@@ -21,8 +21,8 @@ export const verifyJWT = async (
   }
 
   try {
-    const decoded = verifyToken(token);
-
+    const decoded = verifyAccessToken(token);
+    
     const user = await findUserById(decoded.id);
 
     if (!user) {

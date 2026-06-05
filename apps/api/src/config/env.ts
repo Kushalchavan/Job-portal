@@ -15,6 +15,7 @@ const envSchema = z.object({
   SMTP_USER: z.string(),
   SMTP_PASS: z.string(),
   SMTP_FROM: z.string(),
+  JWT_REFRESH_SECRET: z.string().min(10),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
@@ -38,4 +39,5 @@ export const env = {
   SMTP_USER: parsedEnv.data.SMTP_USER,
   SMTP_PASS: parsedEnv.data.SMTP_PASS,
   SMTP_FROM: parsedEnv.data.SMTP_FROM,
+  jwtRefreshSecret: parsedEnv.data.JWT_REFRESH_SECRET,
 };

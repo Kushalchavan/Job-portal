@@ -21,6 +21,7 @@ model User {
 
   savedJobs     SavedJob[]
   applications  Application[]
+  refreshTokens RefreshToken[]
   companies     Company[]
   jobs          Job[]
   notifications Notification[]
@@ -153,6 +154,18 @@ model SavedJob {
   @@unique([userId, jobId])
   @@index([userId])
   @@index([jobId])
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 enum Role {

@@ -1,8 +1,20 @@
 import bcrypt from "bcrypt";
 import { AppError } from "../../utils/AppError";
-import { signToken } from "../../utils/jwt";
+import {
+  createUser,
+  deleteAllRefreshTokensByUserId,
+  deleteRefreshToken,
+  findRefreshToken,
+  findUserByEmail,
+  findUserById,
+} from "./auth.repository";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+} from "../../utils/jwt";
+import { createRefreshToken } from "./auth.repository";
 
-import { createUser, findUserByEmail, findUserById } from "./auth.repository";
 
 export const registerUser = async (
   name: string,
@@ -25,13 +37,26 @@ export const registerUser = async (
     role,
   });
 
-  const token = signToken({
+  const accessToken = generateAccessToken({
     id: user.id,
     role: user.role,
   });
 
+  const refreshToken = generateRefreshToken({
+    id: user.id,
+    role: user.role,
+  });
+
+  const expiresAt = new Date();
+
+  expiresAt.setDate(expiresAt.getDate() + 7);
+
+  await createRefreshToken(refreshToken, user.id, expiresAt);
+
   return {
-    token,
+    accessToken,
+    refreshToken,
+
     user: {
       id: user.id,
       role: user.role,
@@ -58,13 +83,25 @@ export const loginUser = async (email: string, password: string) => {
     throw new AppError("Invalid Credentials", 401);
   }
 
-  const token = signToken({
+  const accessToken = generateAccessToken({
     id: user.id,
     role: user.role,
   });
 
+  const refreshToken = generateRefreshToken({
+    id: user.id,
+    role: user.role,
+  });
+
+  const expiresAt = new Date();
+
+  expiresAt.setDate(expiresAt.getDate() + 7);
+
+  await createRefreshToken(refreshToken, user.id, expiresAt);
+
   return {
-    token,
+    accessToken,
+    refreshToken,
     user: {
       id: user.id,
       role: user.role,
@@ -82,4 +119,69 @@ export const getCurrentUser = async (userId: number) => {
   }
 
   return user;
+};
+
+export const refreshAccessToken = async (refreshToken: string) => {
+  try {
+    const decoded = verifyRefreshToken(refreshToken);
+
+    const savedToken = await findRefreshToken(refreshToken);
+
+    if (!savedToken) {
+      throw new AppError("Invalid refresh token", 401);
+    }
+
+    if (savedToken.expiresAt < new Date()) {
+      throw new AppError("Refresh token expired", 401);
+    }
+
+    const accessToken = generateAccessToken({
+      id: decoded.id,
+      role: decoded.role,
+    });
+
+    return {
+      accessToken,
+    };
+  } catch {
+    throw new AppError("Invalid refresh token", 401);
+  }
+};
+
+export const logoutUser = async (
+  refreshToken: string,
+) => {
+  const existingToken =
+    await findRefreshToken(
+      refreshToken,
+    );
+
+  if (!existingToken) {
+    throw new AppError(
+      "Refresh token not found",
+      404,
+    );
+  }
+
+  await deleteRefreshToken(
+    refreshToken,
+  );
+
+  return {
+    message:
+      "Logged out successfully",
+  };
+};
+
+export const logoutAllDevices = async (
+  userId: number,
+) => {
+  await deleteAllRefreshTokensByUserId(
+    userId,
+  );
+
+  return {
+    message:
+      "Logged out from all devices",
+  };
 };
