@@ -1,5 +1,7 @@
 import { prisma } from "../../config/prisma";
 
+// User Functions\
+
 export const findUserByEmail = async (email: string) => {
   return prisma.user.findUnique({
     where: { email },
@@ -122,6 +124,60 @@ export const updatePassword = async (userId: number, password: string) => {
     },
     data: {
       password,
+    },
+  });
+};
+
+// Email Verification Token Functions
+
+export const createEmailVerificationToken = async (
+  token: string,
+  userId: number,
+  expiresAt: Date,
+) => {
+  return prisma.emailVerificationToken.create({
+    data: {
+      token,
+      userId,
+      expiresAt,
+    },
+  });
+};
+
+export const findEmailVerificationToken = async (token: string) => {
+  return prisma.emailVerificationToken.findFirst({
+    where: {
+      token,
+    },
+    include: {
+      user: true,
+    },
+  });
+};
+
+export const deleteEmailVerificationTokensByUserId = async (userId: number) => {
+  return prisma.emailVerificationToken.deleteMany({
+    where: {
+      userId,
+    },
+  });
+};
+
+export const deleteEmailVerificationToken = async (id: string) => {
+  return prisma.emailVerificationToken.delete({
+    where: {
+      id,
+    },
+  });
+};
+
+export const verifyUserEmail = async (userId: number) => {
+  return prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      emailVerified: true,
     },
   });
 };

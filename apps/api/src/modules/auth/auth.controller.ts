@@ -9,6 +9,8 @@ import {
   logoutAllDevices,
   forgotPassword,
   resetPassword,
+  verifyEmail,
+  resendVerificationEmail,
 } from "./auth.service";
 import { AppError } from "../../utils/AppError";
 
@@ -132,3 +134,30 @@ export const resetPasswordController = asyncHandler(
     });
   },
 );
+
+export const verifyEmailController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const token = req.query.token as string;
+
+    const result = await verifyEmail(token);
+
+    res.status(200).json({
+      success: true,
+      ...result,
+    });
+  },
+);
+
+export const resendVerificationEmailController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { email } = req.body;
+
+    const result = await resendVerificationEmail(email);
+
+    res.status(200).json({
+      success: true,
+      ...result,
+    });
+  },
+);
+

@@ -13,6 +13,11 @@ import {
   findUserById,
   findPasswordResetToken,
   updatePassword,
+  createEmailVerificationToken,
+  deleteEmailVerificationTokensByUserId,
+  deleteEmailVerificationToken,
+  verifyUserEmail,
+  findEmailVerificationToken,
 } from "./auth.repository";
 import {
   generateAccessToken,
@@ -43,32 +48,47 @@ export const registerUser = async (
     role,
   });
 
-  const accessToken = generateAccessToken({
-    id: user.id,
-    role: user.role,
+  await deleteEmailVerificationTokensByUserId(user.id);
+
+  const verificationToken = crypto.randomBytes(32).toString("hex");
+
+  const hashedVerificationToken = crypto
+    .createHash("sha256")
+    .update(verificationToken)
+    .digest("hex");
+
+  const verificationTokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+  await createEmailVerificationToken(
+    hashedVerificationToken,
+    user.id,
+    verificationTokenExpiresAt,
+  );
+
+  const verificationUrl = `http://localhost:3000/verify-email?token=${verificationToken}`;
+
+  await emailQueue.add("SEND_EMAIL", {
+    to: user.email,
+    subject: "Verify Your Email",
+    html: `
+        <h2>Verify Your Email</h2>
+
+        <p>
+          Click the link below to verify your account:
+        </p>
+
+        <a href="${verificationUrl}">
+          Verify Email
+        </a>
+
+        <p>
+          This link expires in 24 hours.
+        </p>
+      `,
   });
-
-  const refreshToken = generateRefreshToken({
-    id: user.id,
-    role: user.role,
-  });
-
-  const expiresAt = new Date();
-
-  expiresAt.setDate(expiresAt.getDate() + 7);
-
-  await createRefreshToken(refreshToken, user.id, expiresAt);
 
   return {
-    accessToken,
-    refreshToken,
-
-    user: {
-      id: user.id,
-      role: user.role,
-      email: user.email,
-      name: user.name,
-    },
+    message: "Registration successful. Please verify your email.",
   };
 };
 
@@ -77,6 +97,10 @@ export const loginUser = async (email: string, password: string) => {
 
   if (!user) {
     throw new AppError("Email does not exist", 401);
+  }
+
+  if (!user.emailVerified) {
+    throw new AppError("Please verify your email first", 403);
   }
 
   if (!user?.isActive) {
@@ -236,12 +260,85 @@ export const resetPassword = async (token: string, password: string) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   await updatePassword(resetToken.userId, hashedPassword);
-
   await deletePasswordResetToken(resetToken.id);
-
   await deleteAllRefreshTokensByUserId(resetToken.userId);
 
   return {
     message: "Password reset successfully",
+  };
+};
+
+export const verifyEmail = async (token: string) => {
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  const verificationToken = await findEmailVerificationToken(hashedToken);
+
+  if (!verificationToken) {
+    throw new AppError("Invalid verification token", 400);
+  }
+
+  if (verificationToken.expiresAt < new Date()) {
+    await deleteEmailVerificationToken(verificationToken.id);
+
+    throw new AppError("Verification token expired", 400);
+  }
+
+  await verifyUserEmail(verificationToken.userId);
+
+  await deleteEmailVerificationToken(verificationToken.id);
+
+  return {
+    message: "Email verified successfully",
+  };
+};
+
+export const resendVerificationEmail = async (email: string) => {
+  const user = await findUserByEmail(email);
+
+  if (!user) {
+    return;
+  }
+
+  if (user.emailVerified) {
+    throw new AppError("Email already verified", 400);
+  }
+
+  await deleteEmailVerificationTokensByUserId(user.id);
+
+  const verificationToken = crypto.randomBytes(32).toString("hex");
+
+  const hashedVerificationToken = crypto
+    .createHash("sha256")
+    .update(verificationToken)
+    .digest("hex");
+
+  const verificationTokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+  await createEmailVerificationToken(
+    hashedVerificationToken,
+    user.id,
+    verificationTokenExpiresAt,
+  );
+
+  const verificationUrl = `http://localhost:3000/verify-email?token=${verificationToken}`;
+
+  await emailQueue.add("SEND_EMAIL", {
+    to: user.email,
+    subject: "Verify Your Email",
+    html: `
+          <h2>Verify Your Email</h2>
+
+          <p>
+            Click below to verify your account:
+          </p>
+
+          <a href="${verificationUrl}">
+            Verify Email
+          </a>
+        `,
+  });
+
+  return {
+    message: "Verification email sent",
   };
 };
