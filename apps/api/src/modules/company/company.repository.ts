@@ -7,8 +7,8 @@ export const createCompanyRepository = async (
 ) => {
   return prisma.company.create({
     data: {
-      ...data,
-      website: data.website ?? null,
+      ...data.body,
+      website: data.body.website ?? null,
       createdById: userId,
     },
   });
@@ -24,7 +24,12 @@ export const findCompanyById = async (id: number) => {
 
 export const updateCompanyRepository = async (
   id: number,
-  data: Partial<UpdateCompanyInput>,
+  data: {
+    name?: string;
+    description?: string;
+    location?: string;
+    website?: string | null;
+  },
 ) => {
   return prisma.company.update({
     where: {

@@ -284,7 +284,6 @@ export const verifyEmail = async (token: string) => {
   }
 
   await verifyUserEmail(verificationToken.userId);
-
   await deleteEmailVerificationToken(verificationToken.id);
 
   return {

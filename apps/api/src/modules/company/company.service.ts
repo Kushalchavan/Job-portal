@@ -7,11 +7,7 @@ import {
   updateCompanyRepository,
   countCompanyJobs,
 } from "./company.repository";
-
-import {
-  CreateCompanyInput,
-  UpdateCompanyInput,
-} from "../../types/company.types";
+import { CreateCompanyInput, UpdateCompanyInput } from "./company.types";
 
 import { AppError } from "../../utils/AppError";
 
@@ -26,7 +22,9 @@ export const updateCompany = async (
   data: UpdateCompanyInput,
   userId: number,
 ) => {
-  const company = await findCompanyById(data.id);
+  const id = Number(data.params.id);
+
+  const company = await findCompanyById(id);
 
   if (!company) {
     throw new AppError("Company not found", 404);
@@ -36,7 +34,7 @@ export const updateCompany = async (
     throw new AppError("Not Allowed", 403);
   }
 
-  const { id, website, ...rest } = data;
+  const { website, ...rest } = data.body;
 
   const cleanData = Object.fromEntries(
     Object.entries(rest).filter(([_, value]) => value !== undefined),

@@ -42,7 +42,9 @@ export const getTopCandidatesController = asyncHandler(
 
 export const getResumeMatchesController = asyncHandler(
   async (req: Request, res: Response) => {
-    const resumeId = req.params.resumeId;
+    const { resumeId } = req.params as {
+      resumeId: string;
+    };
 
     const matches = await getResumeMatches(resumeId);
 
@@ -56,7 +58,9 @@ export const getResumeMatchesController = asyncHandler(
 
 export const updateMatchStatusController = asyncHandler(
   async (req: Request, res: Response) => {
-    const matchId = req.params.matchId;
+    const { matchId } = req.params as {
+      matchId: string;
+    };
 
     const { status } = updateMatchStatusSchema.parse(req.body);
 
@@ -98,23 +102,17 @@ export const getCandidatePipelineController = asyncHandler(
   },
 );
 
-export const getCandidateProfileController =
-  asyncHandler(
-    async (
-      req: Request,
-      res: Response,
-    ) => {
-      const resumeId =
-        req.params.resumeId;
+export const getCandidateProfileController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { resumeId } = req.params as {
+      resumeId: string;
+    };
 
-      const candidate =
-        await getCandidateProfileData(
-          resumeId,
-        );
+    const candidate = await getCandidateProfileData(resumeId);
 
-      res.status(200).json({
-        success: true,
-        data: candidate,
-      });
-    },
-  );
+    res.status(200).json({
+      success: true,
+      data: candidate,
+    });
+  },
+);

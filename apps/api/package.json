@@ -21,6 +21,7 @@
     "@google/genai": "^2.6.0",
     "@google/generative-ai": "^0.24.1",
     "@prisma/client": "^6.19.2",
+    "@repo/schemas": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/types": "workspace:*",
     "bcrypt": "^6.0.0",
