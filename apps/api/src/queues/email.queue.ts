@@ -1,11 +1,9 @@
 import { Queue } from "bullmq";
+import { env } from "../config/env";
 
-export const emailQueue = new Queue(
-  "emails",
-  {
-    connection: {
-      host: "localhost",
-      port: 6379,
-    },
+export const emailQueue = new Queue("email", {
+  connection: {
+    host: env.redisHost,
+    port: env.redisPort,
   },
-);
+});

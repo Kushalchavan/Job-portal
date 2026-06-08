@@ -1,4 +1,5 @@
 import { Queue } from "bullmq";
+import { env } from "../config/env";
 
 export interface NotificationJobData {
   userId: number;
@@ -9,9 +10,9 @@ export interface NotificationJobData {
 export const notificationQueue = new Queue<NotificationJobData>(
   "notifications",
   {
-    connection: {
-      host: "localhost",
-      port: 6379,
-    },
+   connection: {
+         host: env.redisHost,
+         port: env.redisPort,
+       },
   },
 );

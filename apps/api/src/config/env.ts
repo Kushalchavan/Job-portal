@@ -16,6 +16,8 @@ const envSchema = z.object({
   SMTP_PASS: z.string(),
   SMTP_FROM: z.string(),
   JWT_REFRESH_SECRET: z.string().min(10),
+  REDIS_HOST: z.string().default("localhost"),
+  REDIS_PORT: z.string().default("6379"),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
@@ -40,4 +42,6 @@ export const env = {
   SMTP_PASS: parsedEnv.data.SMTP_PASS,
   SMTP_FROM: parsedEnv.data.SMTP_FROM,
   jwtRefreshSecret: parsedEnv.data.JWT_REFRESH_SECRET,
+  redisHost: parsedEnv.data.REDIS_HOST,
+  redisPort: Number(parsedEnv.data.REDIS_PORT),
 };
