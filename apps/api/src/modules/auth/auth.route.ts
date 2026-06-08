@@ -35,6 +35,5 @@ router.get("/verify-email", verifyEmailController);
 router.post("/forgot-password", forgotPasswordController);
 router.post("/reset-password", resetPasswordController);
 router.post("/resend-verification-email", resendVerificationEmailController);
-router.post("/reseind-verification-email", resendVerificationEmailController);
 
 export default router;
