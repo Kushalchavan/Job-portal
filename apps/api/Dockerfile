@@ -4,14 +4,9 @@ WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@11.5.0 --activate
 
-COPY package.json pnpm-workspace.yaml turbo.json ./
-
-COPY apps/api/package.json ./apps/api/
-COPY packages ./packages
-
-RUN pnpm install
-
 COPY . .
+
+RUN pnpm install --config.strict-dep-builds=false
 
 WORKDIR /app/apps/api
 
