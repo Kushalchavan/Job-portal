@@ -7,6 +7,7 @@ import {
 } from "./resume.service";
 import { asyncHandler } from "../../utils/asyncHandler";
 import { AppError } from "../../utils/AppError";
+import logger from "../../config/logger";
 
 export const uploadResumeController = async (req: Request, res: Response) => {
   try {
@@ -38,7 +39,10 @@ export const uploadResumeController = async (req: Request, res: Response) => {
       data: resume,
     });
   } catch (error) {
-    console.log(error);
+    logger.error("Error uploading resume", {
+      error: (error as Error).message,
+      stack: (error as Error).stack,
+    });
 
     return res.status(500).json({
       success: false,

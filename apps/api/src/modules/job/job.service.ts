@@ -12,6 +12,7 @@ import {
 } from "./job.repository";
 import { EmploymentType, Level } from "@prisma/client";
 import { clearJobsCache, getCache, setCache } from "../../utils/cache";
+import logger from "../../config/logger";
 
 export const createJobs = async (data: any, userId: number) => {
   const company = await findCompanyById(data.companyId);
@@ -83,11 +84,13 @@ export const getJobs = async (
   }>(cacheKey);
 
   if (cachedData) {
-    console.log("🔥 Cache Hit");
+    logger.info("Jobs cache hit", {
+      cachedDataCount: cachedData.jobs.length,
+    });
     return cachedData;
   }
 
-  console.log("💾 Cache Miss");
+  logger.info("Jobs cache miss");
 
   const { jobs, total } = await getJobsRepo(
     page,

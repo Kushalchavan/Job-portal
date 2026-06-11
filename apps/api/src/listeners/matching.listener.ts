@@ -1,3 +1,4 @@
+import logger from "../config/logger";
 import { prisma } from "../config/prisma";
 import { eventEmitter } from "../events/eventEmitter";
 import { EVENTS } from "../events/events.contants";
@@ -20,6 +21,10 @@ eventEmitter.on(
       },
     });
 
-    console.log(`Notification created for resume ${match.resumeId}`);
+    logger.info("Notification created", {
+      resumeId: match.resumeId,
+      jobId: match.jobId,
+      status,
+    });
   },
 );

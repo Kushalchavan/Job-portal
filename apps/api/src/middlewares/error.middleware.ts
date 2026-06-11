@@ -8,8 +8,6 @@ export const errorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
-  console.error(err);
-
   if (err instanceof AppError) {
     return res
       .status(err.statusCode)

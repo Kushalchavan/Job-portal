@@ -1,6 +1,7 @@
 import { Worker } from "bullmq";
 import { prisma } from "../config/prisma";
 import { env } from "../config/env";
+import logger from "../config/logger";
 
 new Worker(
   "notifications",
@@ -13,7 +14,9 @@ new Worker(
       },
     });
 
-    console.log("Notification Created:", job.data);
+    logger.info("Notification created successfully", {
+      userId: job.data.userId,
+    });
   },
   {
     connection: {

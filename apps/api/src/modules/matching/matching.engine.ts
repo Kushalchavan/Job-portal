@@ -1,5 +1,6 @@
 import { calculateMatchScore } from "./matching.service";
 import { createResumeMatch, getActiveJobs } from "./matching.repository";
+import logger from "../../config/logger";
 
 export const matchResumeAgainstJobs = async (
   resumeId: string,
@@ -7,19 +8,30 @@ export const matchResumeAgainstJobs = async (
 ) => {
   const jobs = await getActiveJobs();
 
-  console.log(`Found ${jobs.length} active jobs`);
+  logger.info("Found active jobs for matching", {
+    resumeId,
+    resumeSkillsCount: resumeSkills.length,
+    activeJobsCount: jobs.length,
+  });
 
   for (const job of jobs) {
-    console.log("=================================");
-    console.log("Resume Skills:", resumeSkills);
-    console.log("Job Skills:", job.requiredSkills);
-    console.log("=================================");
+    logger.info("Matching resume against job", {
+      resumeId,
+      jobId: job.id,
+      resumeSkillsCount: resumeSkills.length,
+      jobSkillsCount: job.requiredSkills.length,
+    });
 
+    // calculate match score based on skills
     const matchResult = calculateMatchScore(resumeSkills, job.requiredSkills);
 
-    console.log("=================================");
-    console.log("Job:", job.title);
-    console.log("Match Result:", matchResult);
+    logger.info("Match result calculated", {
+      resumeId,
+      jobId: job.id,
+      score: matchResult.score,
+      matchedSkillsCount: matchResult.matchedSkills.length,
+      missingSkillsCount: matchResult.missingSkills.length,
+    });
 
     if (matchResult.score === 0) {
       continue;
@@ -42,9 +54,11 @@ ${matchResult.missingSkills.join(", ")}
       summary,
     });
 
-    console.log("=================================");
-    console.log("ResumeMatch Saved:");
-    console.log(savedMatch);
-    console.log("=================================");
+    logger.info("Resume matched with job", {
+      resumeId,
+      jobId: job.id,
+      matchId: savedMatch.id,
+      score: matchResult.score,
+    });
   }
 };

@@ -1,4 +1,5 @@
 import { generateText } from "./gemini.service";
+import logger from "../../config/logger";
 
 export const extractJobSkills = async (
   description: string,
@@ -19,10 +20,10 @@ ${description}
 
   const parsedResponse = JSON.parse(response);
 
-  console.log("=================================");
-  console.log("RAW GEMINI RESPONSE:");
-  console.log(response);
-  console.log("=================================");
+  logger.info("Extracted skills from job description", {
+    descriptionLength: description.length,
+    extractedSkillsCount: parsedResponse.length,
+  });
 
   return parsedResponse;
 };

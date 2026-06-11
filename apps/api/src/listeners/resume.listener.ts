@@ -8,10 +8,14 @@ import {
   parseResume,
 } from "../modules/ai/resume-parser.service";
 import { matchResumeAgainstJobs } from "../modules/matching/matching.engine";
+import logger from "../config/logger";
 
 eventEmitter.on(EVENTS.RESUME_UPLOADED_EVENT, async (payload) => {
   try {
-    console.log("Resume uploaded event received:", payload);
+    logger.info("Resume uploaded event received", {
+      requestId: payload.requestId,
+      resumeId: payload.resumeId,
+    });
 
     await prisma.resume.update({
       where: {
@@ -25,12 +29,15 @@ eventEmitter.on(EVENTS.RESUME_UPLOADED_EVENT, async (payload) => {
     // Extract PDF text
     const extractedText = await extractTextFromPDF(payload.storageKey);
 
-    console.log("Extracted Text Length:", extractedText.length);
+    logger.info("Extracted Text Length:", {
+      resumeId: payload.resumeId,
+      length: extractedText.length,
+    });
 
-    console.log(
-      "Extracted Text (First 500 Characters):",
-      extractedText.substring(0, 500),
-    );
+    logger.info("Extracted Text (First 500 Characters):", {
+      resumeId: payload.resumeId,
+      text: extractedText.length,
+    });
 
     // Deterministic extraction (always works)
     const deterministicSkills = extractSkills(extractedText);
@@ -42,34 +49,24 @@ eventEmitter.on(EVENTS.RESUME_UPLOADED_EVENT, async (payload) => {
     try {
       aiSkills = await extractResumeSkills(extractedText);
     } catch (error) {
-      console.error("AI skill extraction failed:", error);
+      logger.error("AI skill extractionfailed", {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     }
 
     // AI resume parsing
     try {
       parsedResume = await parseResume(extractedText);
     } catch (error) {
-      console.error("Resume parsing failed:", error);
+      logger.error("Resume parsing failed", {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     }
 
     // Fallback to deterministic skills
     const skillsToMatch = aiSkills.length > 0 ? aiSkills : deterministicSkills;
-
-    console.log("=================================");
-    console.log("Deterministic Skills:");
-    console.log(deterministicSkills);
-
-    console.log("=================================");
-    console.log("AI Skills:");
-    console.log(aiSkills);
-
-    console.log("=================================");
-    console.log("Skills Used For Matching:");
-    console.log(skillsToMatch);
-
-    console.log("=================================");
-    console.log("Parsed Resume:");
-    console.log(parsedResume);
 
     // Run matching engine
     await matchResumeAgainstJobs(payload.resumeId, skillsToMatch);
@@ -86,9 +83,14 @@ eventEmitter.on(EVENTS.RESUME_UPLOADED_EVENT, async (payload) => {
       },
     });
 
-    console.log("Resume processed successfully");
+    logger.info("Resume processed successfully", {
+      resumeId: payload.resumeId,
+    });
   } catch (error) {
-    console.error("Resume processing failed:", error);
+    logger.error("Resume processing failed", {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
 
     await prisma.resume.update({
       where: {
