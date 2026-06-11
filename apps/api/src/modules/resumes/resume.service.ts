@@ -14,12 +14,14 @@ interface CreateResumeInput {
   storageKey: string;
   mimeType: string;
   size: number;
+  requestId: string;
 }
 
 export const createResume = async (data: CreateResumeInput) => {
   const resume = await createResumeRepo(data);
 
   eventEmitter.emit(EVENTS.RESUME_UPLOADED_EVENT, {
+    requestId: data.requestId,
     resumeId: resume.id,
     userId: resume.userId,
     storageKey: resume.storageKey,

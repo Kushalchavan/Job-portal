@@ -31,6 +31,7 @@ export const uploadResumeController = async (req: Request, res: Response) => {
       storageKey: req.file.path,
       mimeType: req.file.mimetype,
       size: req.file.size,
+      requestId: req.requestId,
     });
 
     return res.status(201).json({

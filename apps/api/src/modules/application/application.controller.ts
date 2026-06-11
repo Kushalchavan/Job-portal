@@ -15,7 +15,7 @@ export const applyToJobController = asyncHandler(
       throw new AppError("Unauthorized", 401);
     }
 
-    const application = await applyToJob(req.user.id, req.body);
+    const application = await applyToJob(req.user.id, req.body, req.requestId);
 
     res.status(201).json({
       success: true,
@@ -56,6 +56,7 @@ export const updateApplicationStatusController = asyncHandler(
     const application = await updateApplicationStatus(
       Number(req.params.id),
       req.body.status,
+      req.requestId,
     );
 
     res.status(200).json({
@@ -84,4 +85,3 @@ export const withdrawApplicationController = asyncHandler(
     });
   },
 );
-

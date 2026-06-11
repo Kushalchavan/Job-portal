@@ -6,7 +6,10 @@ import logger from "../config/logger";
 
 eventEmitter.on(EVENTS.JOB_CREATED_EVENT, async (payload) => {
   try {
-    logger.info("Job created event received", { jobId: payload.jobId });
+    logger.info("Job created event received", {
+      requestId: payload.requestId,
+      jobId: payload.jobId,
+    });
 
     const job = await prisma.job.findUnique({
       where: {
@@ -20,6 +23,7 @@ eventEmitter.on(EVENTS.JOB_CREATED_EVENT, async (payload) => {
     }
 
     logger.info("Job Description:", {
+      requestId: payload.requestId,
       jobId: payload.jobId,
       description: job.description.length,
     });
@@ -36,10 +40,12 @@ eventEmitter.on(EVENTS.JOB_CREATED_EVENT, async (payload) => {
     });
 
     logger.info("Required skills updated successfully", {
+      requestId: payload.requestId,
       jobId: payload.jobId,
     });
   } catch (error) {
     logger.error("Job processing failed", {
+      requestId: payload.requestId,
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
     });

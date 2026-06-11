@@ -16,7 +16,7 @@ export const createJobController = asyncHandler(
       throw new AppError("Unauthorized", 401);
     }
 
-    const job = await createJobs(req.body, req.user.id);
+    const job = await createJobs(req.body, req.user.id, req.requestId);
 
     res.status(201).json({
       success: true,

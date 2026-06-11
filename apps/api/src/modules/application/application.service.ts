@@ -16,9 +16,10 @@ import { EVENTS } from "../../events/events.contants";
 interface ApplyJobInput {
   jobId: number;
   resumeUrl?: string;
+  requestId: string;
 }
 
-export const applyToJob = async (userId: number, data: ApplyJobInput) => {
+export const applyToJob = async (userId: number, data: ApplyJobInput, requestId: string) => {
   const { jobId, resumeUrl } = data;
 
   const job = await findJobById(jobId);
@@ -36,6 +37,7 @@ export const applyToJob = async (userId: number, data: ApplyJobInput) => {
   const application = await createApplicationRepo(userId, jobId, resumeUrl);
 
   await notificationQueue.add(EVENTS.APPLICATION_CREATED, {
+    requestId,
     userId,
     type: "APPLICATION_CREATED",
     message: `Your application for ${job.title} has been received.`,
@@ -55,6 +57,7 @@ export const getApplicantsByJob = async (jobId: number) => {
 export const updateApplicationStatus = async (
   applicationId: number,
   status: ApplicationStatus,
+  requestId: string,
 ) => {
   const application = await findApplicationById(applicationId);
 
@@ -91,6 +94,7 @@ export const updateApplicationStatus = async (
   }
 
   await notificationQueue.add(EVENTS.APPLICATION_STATUS_UPDATED, {
+    requestId,
     userId: application.userId,
     type: "JOB_ALERT",
     message,

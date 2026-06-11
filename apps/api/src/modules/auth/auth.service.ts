@@ -32,6 +32,7 @@ export const registerUser = async (
   email: string,
   password: string,
   role: "USER" | "RECRUITER" | "ADMIN",
+  requestId: string,
 ) => {
   const existingUser = await findUserByEmail(email);
 
@@ -68,6 +69,7 @@ export const registerUser = async (
   const verificationUrl = `http://localhost:3000/verify-email?token=${verificationToken}`;
 
   await emailQueue.add("SEND_EMAIL", {
+    requestId,
     to: user.email,
     subject: "Verify Your Email",
     html: `

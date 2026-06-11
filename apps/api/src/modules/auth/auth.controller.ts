@@ -19,7 +19,7 @@ export const registerController = asyncHandler(
   async (req: Request, res: Response) => {
     const { name, email, password, role } = req.body;
 
-    const data = await registerUser(name, email, password, role);
+    const data = await registerUser(name, email, password, role, req.requestId);
 
     res.status(201).json({
       success: true,
@@ -160,4 +160,3 @@ export const resendVerificationEmailController = asyncHandler(
     });
   },
 );
-

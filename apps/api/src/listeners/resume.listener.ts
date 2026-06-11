@@ -30,11 +30,13 @@ eventEmitter.on(EVENTS.RESUME_UPLOADED_EVENT, async (payload) => {
     const extractedText = await extractTextFromPDF(payload.storageKey);
 
     logger.info("Extracted Text Length:", {
+      requestId: payload.requestId,
       resumeId: payload.resumeId,
       length: extractedText.length,
     });
 
     logger.info("Extracted Text (First 500 Characters):", {
+      requestId: payload.requestId,
       resumeId: payload.resumeId,
       text: extractedText.length,
     });
@@ -50,6 +52,7 @@ eventEmitter.on(EVENTS.RESUME_UPLOADED_EVENT, async (payload) => {
       aiSkills = await extractResumeSkills(extractedText);
     } catch (error) {
       logger.error("AI skill extractionfailed", {
+        requestId: payload.requestId,
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
       });
@@ -60,6 +63,7 @@ eventEmitter.on(EVENTS.RESUME_UPLOADED_EVENT, async (payload) => {
       parsedResume = await parseResume(extractedText);
     } catch (error) {
       logger.error("Resume parsing failed", {
+        requestId: payload.requestId,
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
       });
@@ -84,10 +88,12 @@ eventEmitter.on(EVENTS.RESUME_UPLOADED_EVENT, async (payload) => {
     });
 
     logger.info("Resume processed successfully", {
+      requestId: payload.requestId,
       resumeId: payload.resumeId,
     });
   } catch (error) {
     logger.error("Resume processing failed", {
+      requestId: payload.requestId,
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
     });

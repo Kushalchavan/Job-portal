@@ -5,6 +5,7 @@ export interface NotificationJobData {
   userId: number;
   type: string;
   message: string;
+  requestId: string;
 }
 
 export const notificationQueue = new Queue<NotificationJobData>(

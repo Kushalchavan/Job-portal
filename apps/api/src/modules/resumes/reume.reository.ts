@@ -6,6 +6,7 @@ interface CreateResumeInput {
   storageKey: string;
   mimeType: string;
   size: number;
+  requestId: string;
 }
 
 export const createResumeRepo = async (data: CreateResumeInput) => {

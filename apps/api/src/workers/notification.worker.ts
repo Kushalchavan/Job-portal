@@ -8,6 +8,7 @@ new Worker(
   async (job) => {
     await prisma.notification.create({
       data: {
+        requestId: job.data.requestId,
         userId: job.data.userId,
         type: job.data.type,
         message: job.data.message,
@@ -15,7 +16,9 @@ new Worker(
     });
 
     logger.info("Notification created successfully", {
+      requestId: job.data.requestId,
       userId: job.data.userId,
+      type: job.data.type,
     });
   },
   {

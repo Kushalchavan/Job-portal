@@ -14,7 +14,11 @@ import { EmploymentType, Level } from "@prisma/client";
 import { clearJobsCache, getCache, setCache } from "../../utils/cache";
 import logger from "../../config/logger";
 
-export const createJobs = async (data: any, userId: number) => {
+export const createJobs = async (
+  data: any,
+  userId: number,
+  requestId: string,
+) => {
   const company = await findCompanyById(data.companyId);
 
   if (!company) {
@@ -33,6 +37,7 @@ export const createJobs = async (data: any, userId: number) => {
   await clearJobsCache();
 
   eventEmitter.emit(EVENTS.JOB_CREATED_EVENT, {
+    requestId,
     jobId: job.id,
   });
 
