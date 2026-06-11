@@ -1,10 +1,10 @@
 import express from "express";
 import { errorHandler } from "./middlewares/error.middleware";
 import { requestIdMiddleware } from "./middlewares/request-id.middleware";
-import morgan from "morgan";
 import helmet from "helmet";
 import compression from "compression";
 import cors from "cors";
+import { requestLoggerMiddleware } from "./middlewares/request-logger.middleware";
 
 // Import routes here
 import resumeRoutes from "./modules/resumes/resume.route";
@@ -22,12 +22,12 @@ import adminRoutes from "./modules/admin/admin.route";
 const app = express();
 
 /// Middlewares
+app.use(requestIdMiddleware);
+app.use(requestLoggerMiddleware);
 app.use(helmet());
 app.use(compression());
 app.use(express.json());
 app.use(cors());
-app.use(morgan("dev"));
-app.use(requestIdMiddleware);
 
 // Health check endpoint
 app.get("/health", (_, res) => {
