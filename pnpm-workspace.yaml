@@ -11,3 +11,5 @@ allowBuilds:
   msgpackr-extract: set this to true or false
   prisma: set this to true or false
   protobufjs: set this to true or false
+  sharp: true
+  unrs-resolver: true
