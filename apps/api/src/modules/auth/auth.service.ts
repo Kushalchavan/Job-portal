@@ -26,6 +26,7 @@ import {
 } from "../../utils/jwt";
 import { createRefreshToken } from "./auth.repository";
 import { emailQueue } from "../../queues/email.queue";
+import { userRegisteredCounter } from "../../metrics/app.metrics";
 
 export const registerUser = async (
   name: string,
@@ -48,6 +49,9 @@ export const registerUser = async (
     password: hashedPassword,
     role,
   });
+  
+  // Increment the use registration counter for Prometheus metrics
+  userRegisteredCounter.inc();
 
   await deleteEmailVerificationTokensByUserId(user.id);
 

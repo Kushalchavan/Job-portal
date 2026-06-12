@@ -12,6 +12,7 @@ import {
 } from "./application.repository";
 import { notificationQueue } from "../../queues/notification.queue";
 import { EVENTS } from "../../events/events.contants";
+import { applicationCreatedCounter } from "../../metrics/app.metrics";
 
 interface ApplyJobInput {
   jobId: number;
@@ -19,7 +20,11 @@ interface ApplyJobInput {
   requestId: string;
 }
 
-export const applyToJob = async (userId: number, data: ApplyJobInput, requestId: string) => {
+export const applyToJob = async (
+  userId: number,
+  data: ApplyJobInput,
+  requestId: string,
+) => {
   const { jobId, resumeUrl } = data;
 
   const job = await findJobById(jobId);
@@ -35,6 +40,9 @@ export const applyToJob = async (userId: number, data: ApplyJobInput, requestId:
   }
 
   const application = await createApplicationRepo(userId, jobId, resumeUrl);
+
+  // Increment the application creation counter for Prometheus metrics
+  applicationCreatedCounter.inc();
 
   await notificationQueue.add(EVENTS.APPLICATION_CREATED, {
     requestId,

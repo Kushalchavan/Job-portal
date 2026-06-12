@@ -13,6 +13,7 @@ import {
 import { EmploymentType, Level } from "@prisma/client";
 import { clearJobsCache, getCache, setCache } from "../../utils/cache";
 import logger from "../../config/logger";
+import { jobCreatedCounter } from "../../metrics/app.metrics";
 
 export const createJobs = async (
   data: any,
@@ -33,6 +34,9 @@ export const createJobs = async (
   }
 
   const job = await createJobRepo(data, userId);
+
+  // Increment the job creation counter for Prometheus metrics
+  jobCreatedCounter.inc();
 
   await clearJobsCache();
 

@@ -2,6 +2,7 @@ import { Worker } from "bullmq";
 import { prisma } from "../config/prisma";
 import { env } from "../config/env";
 import logger from "../config/logger";
+import { notificationCreatedCounter } from "../metrics/app.metrics";
 
 new Worker(
   "notifications",
@@ -13,6 +14,9 @@ new Worker(
         message: job.data.message,
       },
     });
+
+    // Increment the notification created counter for prometheus metric
+    notificationCreatedCounter.inc();
 
     logger.info("Notification created successfully", {
       requestId: job.data.requestId,
