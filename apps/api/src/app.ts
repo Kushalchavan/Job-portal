@@ -5,6 +5,7 @@ import helmet from "helmet";
 import compression from "compression";
 import cors from "cors";
 import { requestLoggerMiddleware } from "./middlewares/request-logger.middleware";
+import { register } from "./config/metrics";
 
 // Import routes here
 import resumeRoutes from "./modules/resumes/resume.route";
@@ -34,6 +35,13 @@ app.get("/health", (_, res) => {
   res.status(200).json({
     status: "ok",
   });
+});
+
+/// Metrics endpoint
+app.get("/metrics", async (_, res) => {
+  res.set("Content-Type", register.contentType);
+
+  res.end(await register.metrics());
 });
 
 // All routes here
