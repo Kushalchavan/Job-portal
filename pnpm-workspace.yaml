@@ -2,7 +2,7 @@ packages:
   - "apps/*"
   - "packages/*"
 allowBuilds:
-  '@google/genai': set this to true or false
+  '@google/genai': true
   '@prisma/client': set this to true or false
   '@prisma/engines': set this to true or false
   '@scarf/scarf': true

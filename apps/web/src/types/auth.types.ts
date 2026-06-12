@@ -1,12 +1,16 @@
 export interface User {
   id: number;
-  name: string;
   email: string;
-  role: "ADMIN" | "RECRUITER" | "USER";
+  name: string;
+  role: "USER" | "RECRUITER" | "ADMIN";
 }
 
 export interface LoginResponse {
-  accessToken: string;
-  refreshToken: string;
-  user: User;
+  success: boolean;
+  message: string;
+  data: {
+    accessToken: string;
+    refreshToken: string;
+    user: User;
+  };
 }
