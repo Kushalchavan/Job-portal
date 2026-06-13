@@ -6,7 +6,7 @@ import compression from "compression";
 import cors from "cors";
 import { requestLoggerMiddleware } from "./middlewares/request-logger.middleware";
 import { register } from "./config/metrics";
-import { swaggerSpec, swaggerUi } from "./config/swagger";
+import { swaggerSpec, swaggerUi } from "./docs/swagger";
 
 // Import routes here
 import resumeRoutes from "./modules/resumes/resume.route";
@@ -46,11 +46,7 @@ app.get("/metrics", async (_, res) => {
 });
 
 // Swagger UI
-app.use(
-  "/api-docs",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec),
-);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // All routes here
 app.use("/api/v1/auth", authRoutes);
