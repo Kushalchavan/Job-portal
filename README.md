@@ -1,200 +1,429 @@
-# Job Portal 🚀
+# 🚀 AI-Powered Recruitment Platform
 
-A modern and scalable **Job Portal Backend API** built with **Node.js, Express.js, TypeScript, PostgreSQL, and Prisma ORM** following a clean layered architecture and backend engineering best practices.
+An enterprise-grade backend application that helps recruiters find the best candidates using AI-powered resume matching.
 
-This project is designed to simulate a real-world production-ready backend system for job seekers, recruiters, and companies.
+Built with modern backend engineering practices including TypeScript, PostgreSQL, Prisma, Redis, BullMQ, Docker, Nginx, Prometheus, Grafana, and Google Gemini AI.
 
 ---
 
 ## ✨ Features
 
-* 🔐 JWT Authentication & Authorization
-* 👤 Role-based Access Control (Admin, Recruiter, Candidate)
-* 🏢 Company Management
-* 💼 Job Posting & Management
-* 📄 Job Applications
-* ✅ Input Validation using Zod
-* 🔒 Password Hashing with bcrypt
-* 🗄️ PostgreSQL + Prisma ORM
-* ⚡ TypeScript for type safety
-* 📁 Layered Backend Architecture
-* 🌍 Environment-based Configuration
-* 🧹 Clean & Scalable Codebase
+### Authentication & Security
+
+- JWT Authentication
+- Refresh Token Rotation
+- Email Verification
+- Forgot Password Flow
+- Role Based Access Control (RBAC)
+- Recruiter / User / Admin Roles
 
 ---
 
-## 🛠️ Tech Stack
+### Recruiter Features
 
-| Technology | Usage                 |
-| ---------- | --------------------- |
-| Node.js    | Runtime               |
-| Express.js | Backend Framework     |
-| TypeScript | Type Safety           |
-| PostgreSQL | Database              |
-| Prisma ORM | Database ORM          |
-| JWT        | Authentication        |
-| bcrypt     | Password Hashing      |
-| Zod        | Validation            |
-| dotenv     | Environment Variables |
+- Create Companies
+- Manage Companies
+- Create Jobs
+- Update Jobs
+- Delete Jobs
+- View Applicants
+- Candidate Pipeline Tracking
+- AI Candidate Matching
+- Candidate Shortlisting
 
 ---
 
-## 📂 Project Structure
+### Candidate Features
 
-```bash
-src/
+- Register/Login
+- Upload Resume
+- Apply to Jobs
+- Save Jobs
+- Manage Applications
+- Receive Notifications
+
+---
+
+### AI Features
+
+- Resume Parsing
+- Skill Extraction
+- Resume ↔ Job Matching
+- Candidate Ranking
+- Candidate Match Scoring
+- AI Generated Candidate Summaries
+
+---
+
+### Async Processing
+
+- Event Driven Architecture
+- BullMQ Job Queues
+- Redis Backed Workers
+- Background Resume Processing
+- Notification Processing
+
+---
+
+### Observability
+
+- Prometheus Metrics
+- Grafana Dashboards
+- Structured Logging (Winston)
+- Request Tracking
+
+---
+
+### Infrastructure
+
+- Docker
+- Docker Compose
+- Nginx Reverse Proxy
+- Redis Cache
+- PostgreSQL
+- Swagger Documentation
+
+---
+
+# 🏗 Architecture
+
+```text
+                    ┌──────────────┐
+                    │    Client    │
+                    └──────┬───────┘
+                           │
+                           ▼
+                ┌─────────────────────┐
+                │       Nginx         │
+                │   Reverse Proxy     │
+                └─────────┬───────────┘
+                          │
+                          ▼
+                ┌─────────────────────┐
+                │   Express API       │
+                │    TypeScript       │
+                └─────────┬───────────┘
+                          │
+                          ▼
+                ┌─────────────────────┐
+                │ Service Layer       │
+                │ Business Logic      │
+                └─────────┬───────────┘
+                          │
+                          ▼
+                ┌─────────────────────┐
+                │ Prisma ORM          │
+                └─────────┬───────────┘
+                          │
+                          ▼
+                ┌─────────────────────┐
+                │ PostgreSQL          │
+                └─────────────────────┘
+
+
+Async Processing
+
+Event Emitter
+      │
+      ▼
+BullMQ Queue
+      │
+      ▼
+Redis
+      │
+      ▼
+Workers
+ ├─ Resume Parsing
+ ├─ AI Matching
+ └─ Notifications
+
+
+Monitoring
+
+Prometheus
+      │
+      ▼
+Grafana
+```
+
+---
+
+# 📂 Project Structure
+
+```text
+job-portal-ai/
+
+├── apps
+│   ├── api
+│   └── web
 │
-├── config/         # Database & environment configuration
-├── controller/     # Route controllers
-├── middlewares/    # Custom middlewares
-├── routes/         # API routes
-├── service/        # Business logic
-├── validations/    # Zod schemas
-├── utils/          # Utility functions
-├── types/          # Type definitions
-└── index.ts        # Entry point
+├── packages
+│   ├── schemas
+│   ├── tsconfig
+│   └── types
+│
+├── monitoring
+│   └── prometheus.yml
+│
+├── nginx
+│   └── nginx.conf
+│
+├── docker-compose.yml
+├── turbo.json
+└── README.md
 ```
 
 ---
 
-## ⚙️ Installation
+# 📦 Backend Modules
 
-### 1️⃣ Clone the repository
+```text
+auth
+company
+job
+application
+resume
+matching
+notification
+dashboard
+analytics
+saved-job
+admin
+```
+
+---
+
+# 🗄 Database Schema
+
+## User
+
+- Authentication
+- Role Management
+- Resume Management
+- Applications
+- Saved Jobs
+
+## Company
+
+- Recruiter Companies
+- Job Ownership
+
+## Job
+
+- Job Listings
+- Salary Range
+- Skills
+- Experience Levels
+
+## Application
+
+- Candidate Applications
+- Status Tracking
+
+## Resume
+
+- Resume Storage
+- Parsed Skills
+- AI Analysis
+
+## ResumeMatch
+
+- Match Score
+- Missing Skills
+- Candidate Ranking
+
+## Notification
+
+- Job Alerts
+- Application Updates
+
+---
+
+# 🧠 AI Matching Flow
+
+```text
+Resume Upload
+      │
+      ▼
+Resume Parsing
+      │
+      ▼
+Skill Extraction
+      │
+      ▼
+Job Skills Comparison
+      │
+      ▼
+Gemini AI Analysis
+      │
+      ▼
+Match Score Generation
+      │
+      ▼
+Candidate Ranking
+```
+
+---
+
+# 🔐 Roles
+
+## USER
+
+- Upload Resume
+- Apply Jobs
+- Save Jobs
+- View Applications
+
+## RECRUITER
+
+- Manage Companies
+- Manage Jobs
+- View Candidates
+- Shortlist Candidates
+
+## ADMIN
+
+- Manage Users
+- Block Users
+- Platform Analytics
+
+---
+
+# ⚙️ Tech Stack
+
+## Backend
+
+- Node.js
+- TypeScript
+- Express.js
+
+## Database
+
+- PostgreSQL
+- Prisma ORM
+
+## Authentication
+
+- JWT
+- Refresh Tokens
+- bcrypt
+
+## AI
+
+- Google Gemini
+
+## Caching & Queues
+
+- Redis
+- BullMQ
+
+## Monitoring
+
+- Prometheus
+- Grafana
+
+## DevOps
+
+- Docker
+- Docker Compose
+- Nginx
+
+## Documentation
+
+- Swagger OpenAPI
+
+---
+
+# 🚀 API Documentation
+
+Swagger UI:
 
 ```bash
-git clone https://github.com/Kushalchavan/Job-portal.git
+http://localhost:3001/api-docs
 ```
 
-### 2️⃣ Navigate into the project
+---
+
+# 📊 Monitoring
+
+Prometheus:
 
 ```bash
-cd Job-portal
+http://localhost:9090
 ```
 
-### 3️⃣ Install dependencies
+Grafana:
 
 ```bash
-npm install
-```
-
-### 4️⃣ Setup environment variables
-
-Create a `.env` file:
-
-```env
-PORT=3000
-
-DATABASE_URL="your_postgresql_database_url"
-
-JWT_SECRET="your_jwt_secret"
+http://localhost:3000
 ```
 
 ---
 
-## 🗄️ Prisma Setup
-
-Generate Prisma Client:
+# 🐳 Running With Docker
 
 ```bash
-npx prisma generate
+docker-compose up --build
 ```
 
-Run migrations:
+---
+
+# 🔧 Local Development
+
+Install dependencies
 
 ```bash
-npx prisma migrate dev
+pnpm install
 ```
 
----
-
-## ▶️ Run the Project
-
-### Development
+Start development servers
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
-### Production
+Generate Prisma Client
 
 ```bash
-npm run build
-npm start
+pnpm --filter @repo/api prisma:generate
+```
+
+Run Migrations
+
+```bash
+pnpm --filter @repo/api prisma:migrate
 ```
 
 ---
 
-## 🔐 Authentication Flow
+# 🧪 Testing
 
-* User Registration
-* User Login
-* JWT Token Generation
-* Protected Routes using Middleware
-* Role-based Authorization
+```bash
+pnpm --filter @repo/api test
+```
 
 ---
 
-## 📌 API Modules
+# 📈 Future Improvements
 
-### Auth
-
-* Register User
-* Login User
-
-### Company
-
-* Create Company
-* Update Company
-* Get Company Details
-
-### Jobs
-
-* Create Job
-* Update Job
-* Delete Job
-* Get All Jobs
-
-### Applications
-
-* Apply for Job
-* Track Application Status
+- AWS S3 Resume Storage
+- AWS ECS Deployment
+- Kubernetes
+- Elasticsearch Search
+- Recommendation Engine
+- Interview Scheduling
+- Real-time Notifications
+- Multi Tenant Support
 
 ---
 
-## 🧠 Backend Concepts Used
+# 👨‍💻 Author
 
-* Layered Architecture
-* Service Pattern
-* JWT Authentication
-* RBAC (Role Based Access Control)
-* Environment Validation
-* Database Relationships
-* Prisma Schema Design
-* Error Handling Middleware
-* Clean Code Principles
+Kushal Chavan
+
+Backend Developer
+
+Tech Stack:
+Node.js • TypeScript • PostgreSQL • Prisma • Redis • BullMQ • Docker • AWS
 
 ---
-
-
-## 🤝 Contributing
-
-Contributions are welcome!
-
-1. Fork the repository
-2. Create a new branch
-3. Commit your changes
-4. Push the branch
-5. Open a Pull Request
-
----
-
-## 📜 License
-
-This project is licensed under the MIT License.
-
----
-
-## 👨‍💻 Author
-
-Made with ❤️ by Kushal Chavan
-
