@@ -7,9 +7,12 @@ allowBuilds:
   '@prisma/engines': set this to true or false
   '@scarf/scarf': true
   bcrypt: set this to true or false
-  esbuild: set this to true or false
+  esbuild: true
   msgpackr-extract: set this to true or false
   prisma: set this to true or false
   protobufjs: set this to true or false
   sharp: true
   unrs-resolver: true
+minimumReleaseAgeExclude:
+  - react-router-dom@7.18.0
+  - react-router@7.18.0

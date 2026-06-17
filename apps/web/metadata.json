@@ -1,0 +1,6 @@
+{
+  "name": "AI Recruitment Platform",
+  "description": "A production-ready recruiter, applicant, and admin recruitment platform with AI matching, jobs, resume management, and business analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
