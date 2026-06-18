@@ -9,18 +9,5 @@
   "devDependencies": {
     "turbo": "^2.9.14"
   },
-  "packageManager": "pnpm@11.5.0",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@prisma/client",
-      "@prisma/engines",
-      "prisma",
-      "bcrypt",
-      "msgpackr-extract",
-      "protobufjs",
-      "@google/genai",
-      "@scarf/scarf",
-      "esbuild"
-    ]
-  }
+  "packageManager": "pnpm@11.5.0"
 }
