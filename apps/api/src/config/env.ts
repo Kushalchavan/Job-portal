@@ -19,6 +19,7 @@ const envSchema = z.object({
   JWT_REFRESH_SECRET: z.string().min(10),
   REDIS_HOST: z.string().default("localhost"),
   REDIS_PORT: z.string().default("6379"),
+  REDIS_PASSWORD: z.string(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
@@ -46,4 +47,5 @@ export const env = {
   jwtRefreshSecret: parsedEnv.data.JWT_REFRESH_SECRET,
   redisHost: parsedEnv.data.REDIS_HOST,
   redisPort: Number(parsedEnv.data.REDIS_PORT),
+  redisPassword: parsedEnv.data.REDIS_PASSWORD,
 };

@@ -2,15 +2,22 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@11.5.0 --activate
+RUN corepack enable
+RUN corepack prepare pnpm@11.5.0 --activate
 
 COPY . .
 
-RUN pnpm install --config.strict-dep-builds=false
+# Disable pnpm strict build checks
+ENV PNPM_CONFIG_STRICT_DEP_BUILDS=false
+
+RUN pnpm install
 
 WORKDIR /app/apps/api
 
-RUN pnpm prisma:generate
+# Generate Prisma Client directly
+RUN npx prisma generate
+
+# Build API
 RUN pnpm build
 
 EXPOSE 3001
