@@ -5,5 +5,9 @@ export const redisConnection = new IORedis({
   host: env.redisHost,
   port: env.redisPort,
   password: env.redisPassword,
+
+  // Required for Upstash
+  tls: {},
+  
   maxRetriesPerRequest: null,
 });
