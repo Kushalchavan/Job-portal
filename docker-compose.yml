@@ -2,8 +2,11 @@ services:
   redis:
     image: redis:7
     container_name: redis
+    restart: unless-stopped
     ports:
       - "6379:6379"
+    volumes:
+      - redis-data:/data
     networks:
       - jobportal-network
 
@@ -12,6 +15,7 @@ services:
       context: .
       dockerfile: ./apps/api/Dockerfile
     container_name: jobportal-api
+    restart: unless-stopped
     env_file:
       - ./apps/api/.env
     ports:
@@ -24,6 +28,7 @@ services:
   nginx:
     image: nginx:latest
     container_name: nginx
+    restart: unless-stopped
     ports:
       - "80:80"
     volumes:
@@ -36,22 +41,34 @@ services:
   prometheus:
     image: prom/prometheus
     container_name: prometheus
+    restart: unless-stopped
     ports:
       - "9090:9090"
     volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    depends_on:
+      - api
     networks:
       - jobportal-network
 
   grafana:
     image: grafana/grafana
     container_name: grafana
+    restart: unless-stopped
     ports:
       - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
     depends_on:
       - prometheus
     networks:
       - jobportal-network
+
+volumes:
+  redis-data:
+  prometheus-data:
+  grafana-storage:
 
 networks:
   jobportal-network:

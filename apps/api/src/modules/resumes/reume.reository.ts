@@ -11,7 +11,13 @@ interface CreateResumeInput {
 
 export const createResumeRepo = async (data: CreateResumeInput) => {
   return prisma.resume.create({
-    data,
+    data: {
+      userId: data.userId,
+      originalName: data.originalName,
+      storageKey: data.storageKey,
+      mimeType: data.mimeType,
+      size: data.size,
+    }
   });
 };
 

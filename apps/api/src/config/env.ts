@@ -47,5 +47,5 @@ export const env = {
   jwtRefreshSecret: parsedEnv.data.JWT_REFRESH_SECRET,
   redisHost: parsedEnv.data.REDIS_HOST,
   redisPort: Number(parsedEnv.data.REDIS_PORT),
-  redisPassword: parsedEnv.data.REDIS_PASSWORD,
+  redisPassword: parsedEnv.data.REDIS_PASSWORD || undefined,
 };
